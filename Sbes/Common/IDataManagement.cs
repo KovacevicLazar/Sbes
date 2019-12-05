@@ -8,5 +8,7 @@ namespace Common
 {
     public interface IDataManagement
     {
+        bool Read();
+        bool Write(string text);
     }
 }

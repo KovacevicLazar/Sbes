@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DC
 {
-    class AuthenticationController
+    public class AuthenticationController
     {
     }
 }

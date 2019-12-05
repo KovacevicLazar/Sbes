@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DC
+namespace Sbes_Projekat
 {
-    public class DomenController
+    public class Logger
     {
     }
 }

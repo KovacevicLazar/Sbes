@@ -5,14 +5,14 @@ using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common
+namespace Contracts
 {
     [ServiceContract]
-    public interface IDataManagement
+    public interface IWCFContracts
     {
-        [OperationContract]
-        bool Read();
-        [OperationContract]
-        bool Write(string text);
-    }
+		[OperationContract]
+		void TestCommunication();
+		[OperationContract]
+		void SendMessage(string message, byte[] sign);
+	}
 }

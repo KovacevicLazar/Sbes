@@ -46,9 +46,9 @@
     <Reference Include="System.ServiceModel" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
+    <ProjectReference Include="..\Common\Manager.csproj">
       <Project>{b02c0a5a-c4cd-459c-b81f-b786ebce475f}</Project>
-      <Name>Common</Name>
+      <Name>Manager</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

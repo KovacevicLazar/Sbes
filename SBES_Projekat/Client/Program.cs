@@ -14,39 +14,6 @@ namespace Client
 	{
 		static void Main(string[] args)
 		{
-
-<<<<<<< Updated upstream
-			/// Define the expected service certificate. It is required to establish cmmunication using certificates.
-			string srvCertCN = "wcfservice";
-
-			/// Define the expected certificate for signing ("<username>_sign" is the expected subject name).
-			/// .NET WindowsIdentity class provides information about Windows user running the given process
-			string signCertCN = String.Empty;
-
-			/// Define subjectName for certificate used for signing which is not as expected by the service
-			string wrongCertCN = String.Empty;
-
-			NetTcpBinding binding = new NetTcpBinding();
-			binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Certificate;
-
-			/// Use CertManager class to obtain the certificate based on the "srvCertCN" representing the expected service identity.
-			X509Certificate2 srvCert = CertManager.GetCertificateFromStorage(StoreName.TrustedPeople, StoreLocation.LocalMachine, srvCertCN);
-			EndpointAddress address = new EndpointAddress(new Uri("net.tcp://localhost:9999/Receiver"),
-									  new X509CertificateEndpointIdentity(srvCert));
-
-			using (WCFClient proxy = new WCFClient(binding, address))
-			{
-				/// 1. Communication test
-				proxy.TestCommunication();
-				Console.WriteLine("TestCommunication() finished. Press <enter> to continue ...");
-				Console.ReadLine();
-
-				/// 2. Digital Signing test				
-				string message = "Exercise 02";
-
-				/// Create a signature based on the "signCertCN"
-				X509Certificate2 signCert = null;
-=======
 			// Debugger.Launch();
 			//DESKTOP-IJMHSLM\Luka
 			WindowsIdentity id = WindowsIdentity.GetCurrent();
@@ -81,7 +48,6 @@ namespace Client
 			{
 				proxy.SendMessage("msg", new byte[] { 1, 2, 3 });
 			}
->>>>>>> Stashed changes
 
 				/// Create a signature using SHA1 hash algorithm
 				//byte[] signature = DigitalSignature.Create();
@@ -100,7 +66,10 @@ namespace Client
 
 				Console.WriteLine("SendMessage() using {0} certificate finished. Press <enter> to continue ...", wrongCertCN);
 				Console.ReadLine();
-			}
+			
+
+			Console.ReadLine();
+		
 		}
 	}
 }

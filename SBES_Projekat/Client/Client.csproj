@@ -54,17 +54,17 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Manager.csproj">
-      <Project>{b02c0a5a-c4cd-459c-b81f-b786ebce475f}</Project>
-      <Name>Manager</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Contracts\Contracts.csproj">
       <Project>{db4d9c8f-bbe1-4917-8b4e-1854741d1c99}</Project>
       <Name>Contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Sbes_Projekat\DC.csproj">
+    <ProjectReference Include="..\DomainController\DC.csproj">
       <Project>{158648e9-bba4-4ecf-ae1d-6b4027e0416e}</Project>
       <Name>DC</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Manager\Manager.csproj">
+      <Project>{b02c0a5a-c4cd-459c-b81f-b786ebce475f}</Project>
+      <Name>Manager</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

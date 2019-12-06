@@ -29,13 +29,6 @@ namespace Client
 
 			factory = CreateChannel();
 		}
-<<<<<<< Updated upstream
-
-
-
-=======
-		
->>>>>>> Stashed changes
 		public void SendMessage(string message, byte[] sign)
 		{
 			try

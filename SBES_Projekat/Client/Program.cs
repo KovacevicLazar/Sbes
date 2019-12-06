@@ -52,20 +52,16 @@ namespace Client
 				/// Create a signature using SHA1 hash algorithm
 				//byte[] signature = DigitalSignature.Create();
 				//proxy.SendMessage();
-
-				Console.WriteLine("SendMessage() using {0} certificate finished. Press <enter> to continue ...", signCertCN);
-				Console.ReadLine();
+				
 
 
 				/// For the same message, create a signature based on the "wrongCertCN"
-				X509Certificate2 wrongSignCert = null;
+				//X509Certificate2 wrongSignCert = null;
 
 				/// Create a signature using SHA1 hash algorithm
 				//byte[] signature1 = DigitalSignature.Create();
 				//proxy.SendMessage();
-
-				Console.WriteLine("SendMessage() using {0} certificate finished. Press <enter> to continue ...", wrongCertCN);
-				Console.ReadLine();
+				
 			
 
 			Console.ReadLine();

@@ -10,9 +10,9 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Client
 {
-	public class WCFClient : ChannelFactory<IWCFContracts>, IDataManagement, IDisposable
+	public class WCFClient : ChannelFactory<IWCFContracts>, IDisposable
 	{
-		IDataManagement factory;
+		IWCFContracts factory;
 
 		public WCFClient(NetTcpBinding binding, EndpointAddress address)
 			: base(binding, address)
@@ -27,20 +27,10 @@ namespace Client
 			/// Set appropriate client's certificate on the channel. Use CertManager class to obtain the certificate based on the "cltCertCN"
 			this.Credentials.ClientCertificate.Certificate = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, cltCertCN);
 
-			factory = this.CreateChannel();
+			factory = CreateChannel();
 		}
 
-		public void TestCommunication()
-		{
-			try
-			{
-				factory.TestCommunication();
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine("[TestCommunication] ERROR = {0}", e.Message);
-			}
-		}
+
 
 		public void SendMessage(string message, byte[] sign)
 		{
@@ -62,16 +52,18 @@ namespace Client
 			}
 
 			this.Close();
-		}
+		} 
 
-		public bool Read()
-		{
-			throw new NotImplementedException();
-		}
-
-		public bool Write(string text)
-		{
-			throw new NotImplementedException();
-		}
+		//public void TestCommunication()
+		//{
+		//	try
+		//	{
+		//		factory.TestCommunication();
+		//	}
+		//	catch (Exception e)
+		//	{
+		//		Console.WriteLine("[TestCommunication] ERROR = {0}", e.Message);
+		//	}
+		//}
 	}
 }

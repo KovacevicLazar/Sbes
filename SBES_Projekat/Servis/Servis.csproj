@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4E046D1C-4D42-42B2-BC9F-CF134A970804}</ProjectGuid>
+    <ProjectGuid>{B77CC5D1-5357-426E-B174-B31207C6BC0E}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Client</RootNamespace>
-    <AssemblyName>Client</AssemblyName>
+    <RootNamespace>Servis</RootNamespace>
+    <AssemblyName>Servis</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -35,7 +35,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.IdentityModel" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -47,7 +46,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WCFClient.cs" />
+    <Compile Include="WCFService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -56,14 +55,6 @@
     <ProjectReference Include="..\Contracts\Contracts.csproj">
       <Project>{db4d9c8f-bbe1-4917-8b4e-1854741d1c99}</Project>
       <Name>Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DomainController\DC.csproj">
-      <Project>{158648e9-bba4-4ecf-ae1d-6b4027e0416e}</Project>
-      <Name>DC</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Manager\Manager.csproj">
-      <Project>{b02c0a5a-c4cd-459c-b81f-b786ebce475f}</Project>
-      <Name>Manager</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

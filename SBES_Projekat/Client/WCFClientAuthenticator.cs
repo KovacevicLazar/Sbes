@@ -10,16 +10,16 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Client
 {
-	public class WCFClient : ChannelFactory<IWCFContracts>, IDisposable
+	public class WCFClientAuthenticator : ChannelFactory<IClientValidation>, IDisposable
 	{
-		IWCFContracts factory;
+		IClientValidation factory;
 
-		public WCFClient(NetTcpBinding binding, EndpointAddress address)
+		public WCFClientAuthenticator(NetTcpBinding binding, EndpointAddress address)
 			: base(binding, address)
 		{
 			/// cltCertCN.SubjectName should be set to the client's username. .NET WindowsIdentity class provides information about Windows user running the given process
 			string cltCertCN = Formatter.ParseName(WindowsIdentity.GetCurrent().Name);
-						
+
 			this.Credentials.ServiceCertificate.Authentication.CertificateValidationMode = System.ServiceModel.Security.X509CertificateValidationMode.Custom;
 			this.Credentials.ServiceCertificate.Authentication.CustomCertificateValidator = new ClientCertValidator();
 			this.Credentials.ServiceCertificate.Authentication.RevocationMode = X509RevocationMode.NoCheck;
@@ -29,23 +29,19 @@ namespace Client
 
 			factory = CreateChannel();
 		}
-<<<<<<< Updated upstream
 
-
-
-=======
-		
->>>>>>> Stashed changes
-		public void SendMessage(string message, byte[] sign)
+		public bool Authenticate(string username, string password)
 		{
+			bool ret = false;
 			try
 			{
-				factory.SendMessage(message, sign);
+				ret = factory.ValidateUser(username, password);
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine("[SendMessage] ERROR = {0}", e.Message);
 			}
+			return ret;
 		}
 
 		public void Dispose()
@@ -56,7 +52,7 @@ namespace Client
 			}
 
 			this.Close();
-		} 
+		}
 
 		//public void TestCommunication()
 		//{

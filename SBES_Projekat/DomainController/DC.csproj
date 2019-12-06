@@ -43,9 +43,14 @@
     <Compile Include="TicketGrantingService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="System" />
     <Reference Include="System.ServiceModel" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Contracts\Contracts.csproj">
+      <Project>{db4d9c8f-bbe1-4917-8b4e-1854741d1c99}</Project>
+      <Name>Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Manager\Manager.csproj">
       <Project>{b02c0a5a-c4cd-459c-b81f-b786ebce475f}</Project>
       <Name>Manager</Name>

@@ -5,6 +5,8 @@ using System.Text;
 using System.ServiceModel;
 using System.Security.Cryptography.X509Certificates;
 using Manager;
+using System.Security.Principal;
+using System.Threading;
 
 namespace Client
 {
@@ -12,16 +14,59 @@ namespace Client
 	{
 		static void Main(string[] args)
 		{
-
 			// Debugger.Launch();
+			//DESKTOP-IJMHSLM\Luka
+			WindowsIdentity id = WindowsIdentity.GetCurrent();
+			Console.WriteLine(id.Name);
 
 			NetTcpBinding binding = new NetTcpBinding();
-			string address = "net.tcp://localhost:9999/WCFService";
+			binding.Security.Mode = SecurityMode.Transport;
+			binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
+			binding.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.EncryptAndSign;
 
-			using (WCFClient proxy = new WCFClient(binding, new EndpointAddress(new Uri(address))))
+			string address = "net.tcp://localhost:";
+			string servicePort = "9999";
+			string authenticationPort = "9998";
+			string authenticationService = "DomenController";
+			string service = "WCFService";
+
+
+
+			using (WCFClientAuthenticator authenticator = new WCFClientAuthenticator(binding, new EndpointAddress(new Uri(address + authenticationPort + "/" + authenticationService))))
 			{
-				proxy.SendMessage("msg", new byte[] { 1, 2, 3});
+				if(authenticator.Authenticate(id.Name, "password"))
+				{
+					Console.WriteLine(id.Name + " successfully logged in.");
+				}
+				else
+				{
+					Console.WriteLine("Invalid password.");
+				}
 			}
+
+			using (WCFClient proxy = new WCFClient(binding, new EndpointAddress(new Uri(address + servicePort + "/" + service))))
+			{
+				proxy.SendMessage("msg", new byte[] { 1, 2, 3 });
+			}
+
+				/// Create a signature using SHA1 hash algorithm
+				//byte[] signature = DigitalSignature.Create();
+				//proxy.SendMessage();
+
+				Console.WriteLine("SendMessage() using {0} certificate finished. Press <enter> to continue ...", signCertCN);
+				Console.ReadLine();
+
+
+				/// For the same message, create a signature based on the "wrongCertCN"
+				X509Certificate2 wrongSignCert = null;
+
+				/// Create a signature using SHA1 hash algorithm
+				//byte[] signature1 = DigitalSignature.Create();
+				//proxy.SendMessage();
+
+				Console.WriteLine("SendMessage() using {0} certificate finished. Press <enter> to continue ...", wrongCertCN);
+				Console.ReadLine();
+			
 
 			Console.ReadLine();
 		

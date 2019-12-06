@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
+    <Compile Include="IClientValidation.cs" />
     <Compile Include="IDataManagement.cs" />
     <Compile Include="IWCFContracts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

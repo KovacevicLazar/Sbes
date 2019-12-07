@@ -14,7 +14,8 @@ namespace DC
 		{
 			RegisteredUsers = new Dictionary<string, string>();
 			RegisteredUsers.Add("DESKTOP-IJMHSLM\\Luka", "password");
-		}
+            RegisteredUsers.Add("LAZAR\\Lazar", "password");
+        }
 
 		public bool Authenticate(string username, string password)
 		{

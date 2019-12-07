@@ -38,7 +38,10 @@ namespace Client
 				if(authenticator.Authenticate(id.Name, "password"))
 				{
 					Console.WriteLine(id.Name + " successfully logged in.");
-                    authenticator.ServiceExist(service);
+                    if (!authenticator.ServiceExist(service))
+                    {
+                        Console.WriteLine(service + " not exist.");
+                    }
 				}
 				else
 				{

@@ -18,6 +18,7 @@ namespace Client
 			//DESKTOP-IJMHSLM\Luka
 			WindowsIdentity id = WindowsIdentity.GetCurrent();
 			Console.WriteLine(id.Name);
+           
 
 			NetTcpBinding binding = new NetTcpBinding();
 			binding.Security.Mode = SecurityMode.Transport;
@@ -37,6 +38,7 @@ namespace Client
 				if(authenticator.Authenticate(id.Name, "password"))
 				{
 					Console.WriteLine(id.Name + " successfully logged in.");
+                    authenticator.ServiceExist(service);
 				}
 				else
 				{

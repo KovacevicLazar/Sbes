@@ -11,10 +11,13 @@ namespace Server
 		{
 
 			NetTcpBinding binding = new NetTcpBinding();
-			string address = "net.tcp://localhost:9999/WCFService";
 
-			ServiceHost host = new ServiceHost(typeof(WCFService));
-			host.AddServiceEndpoint(typeof(IWCFContracts), binding, address);
+            string address = "net.tcp://";
+            string serviceIPAddr = "localhost:9999";
+            string service = "WCFService";
+
+            ServiceHost host = new ServiceHost(typeof(WCFService));
+			host.AddServiceEndpoint(typeof(IWCFContracts), binding, address + serviceIPAddr  + "/" + service);
 
 			host.Description.Behaviors.Remove(typeof(ServiceDebugBehavior));
 			host.Description.Behaviors.Add(new ServiceDebugBehavior() { IncludeExceptionDetailInFaults = true });
@@ -22,11 +25,13 @@ namespace Server
 			host.Open();
 			Console.WriteLine("WCFService is opened. Press <enter> to finish...");
 
-			//
-			//Potrebno je prijaviti servis na TGS, jer je sada aktivan
-			//
+            using (WCFServiceRegister proxy = new WCFServiceRegister(binding, new EndpointAddress(new Uri("net.tcp://localhost:9998/DomenController"))))
+            {
+                EndpointIdentity ei = EndpointIdentity.CreateDnsIdentity("contoso.com");
+                proxy.SendIpAddrAndHostName(serviceIPAddr, service, null);
+            }
 
-			Console.ReadLine();
+            Console.ReadLine();
 
 			//
 			//Ovde bi trebalo javiti TGS-u da servis vise nije aktivan

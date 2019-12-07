@@ -12,5 +12,12 @@ namespace Contracts
 	{
 		[OperationContract]
 		bool ValidateUser(string username, string password);
-	}
+
+        [OperationContract]
+        bool ServiceExist(string hostName);
+
+
+        [OperationContract]
+        bool serviceRegistration(string ipAddr, string hostName, EndpointIdentity ServiceID);
+    }
 }

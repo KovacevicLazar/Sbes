@@ -54,16 +54,31 @@ namespace Client
 			this.Close();
 		}
 
-		//public void TestCommunication()
-		//{
-		//	try
-		//	{
-		//		factory.TestCommunication();
-		//	}
-		//	catch (Exception e)
-		//	{
-		//		Console.WriteLine("[TestCommunication] ERROR = {0}", e.Message);
-		//	}
-		//}
-	}
+        public bool ServiceExist(string hostName)
+        {
+            bool ret = false;
+            try
+            {
+                ret = factory.ServiceExist(hostName);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("[SendMessage] ERROR = {0}", e.Message);
+            }
+            return ret;
+        }
+
+
+        //public void TestCommunication()
+        //{
+        //	try
+        //	{
+        //		factory.TestCommunication();
+        //	}
+        //	catch (Exception e)
+        //	{
+        //		Console.WriteLine("[TestCommunication] ERROR = {0}", e.Message);
+        //	}
+        //}
+    }
 }

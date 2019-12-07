@@ -12,12 +12,12 @@ namespace DC
         //<IPaddr,HostName>
         private Dictionary<string, string> ipAddrAndHostName = new Dictionary<string, string>();
 
-        //<IPAddr,ServiceID>
+        //<hostName,ServiceID>
         private Dictionary<string, EndpointIdentity> activeServices = new Dictionary<string, EndpointIdentity>();
 
-        public bool servisPostoji(string ipAddr)
+        public bool serserviceExists(string hostName)
         {
-            if (activeServices.ContainsKey(ipAddr))
+            if (activeServices.ContainsKey(hostName))
             {
                 //Ovde treba generisati tajni kljuc koji treba proslediti klijentu i serveru
                 return true;
@@ -28,7 +28,7 @@ namespace DC
             }
         }
         
-        public bool prijavljivanjeNovogServisa(string ipAddr,string hostName, EndpointIdentity ServiceID)
+        public bool serviceRegistration(string ipAddr,string hostName, EndpointIdentity ServiceID)
         {
             if (activeServices.ContainsKey(ipAddr))
             {

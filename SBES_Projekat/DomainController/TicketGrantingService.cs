@@ -13,11 +13,14 @@ namespace DC
         private Dictionary<string, string> ipAddrAndHostName = new Dictionary<string, string>();
 
         //<hostName,ServiceID>
-        private Dictionary<string, EndpointIdentity> activeServices = new Dictionary<string, EndpointIdentity>();
+        private static Dictionary<string, EndpointIdentity> activeServices = new Dictionary<string, EndpointIdentity>();
+
+        public Dictionary<string, string> IpAddrAndHostName { get => ipAddrAndHostName; set => ipAddrAndHostName = value; }
+        public static Dictionary<string, EndpointIdentity> ActiveServices { get => activeServices; set => activeServices = value; }
 
         public bool serserviceExists(string hostName)
         {
-            if (activeServices.ContainsKey(hostName))
+            if (ActiveServices.ContainsKey(hostName))
             {
                 //Ovde treba generisati tajni kljuc koji treba proslediti klijentu i serveru
                 return true;
@@ -28,16 +31,19 @@ namespace DC
             }
         }
         
-        public bool serviceRegistration(string ipAddr,string hostName, EndpointIdentity ServiceID)
+        public bool serviceRegistration(string ipAddr,string hostName)
         {
-            if (activeServices.ContainsKey(ipAddr))
+            if (ActiveServices.ContainsKey(ipAddr))
             {
                 return false; //Servis je vec na spisku startovanih servisa
             }
             else
             {
-                ipAddrAndHostName[ipAddr] = hostName;
-                activeServices[ipAddr] = ServiceID;
+
+                Console.WriteLine("Servis {0}/{1} has been launched", ipAddr, hostName);
+                IpAddrAndHostName[ipAddr] = hostName;
+                EndpointAddress endpointAddress = new EndpointAddress(new Uri("net.tcp://localhost:9999/WCFService"), EndpointIdentity.CreateDnsIdentity("WCFService"));
+                ActiveServices.Add(hostName, endpointAddress.Identity);
                 return true;
             }
         }

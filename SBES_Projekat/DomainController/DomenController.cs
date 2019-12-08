@@ -18,9 +18,9 @@ namespace DC
             return TGS.serserviceExists(hostName);
         }
 
-        public bool serviceRegistration(string ipAddr, string hostName, EndpointIdentity ServiceID)
+        public bool serviceRegistration(string ipAddr, string hostName)
         {
-            return TGS.serviceRegistration(ipAddr,hostName,ServiceID);
+            return TGS.serviceRegistration(ipAddr,hostName);
         }
 
         public bool ValidateUser(string username, string password)

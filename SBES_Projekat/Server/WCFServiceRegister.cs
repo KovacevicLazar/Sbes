@@ -31,11 +31,11 @@ namespace Server
             factory = CreateChannel();
         }
 
-        public void SendIpAddrAndHostName(string ipAddr, string hostName, EndpointIdentity endpointIdentity)
+        public void SendIpAddrAndHostName(string ipAddr, string hostName)
         {
             try
             {
-                factory.serviceRegistration(ipAddr,hostName,endpointIdentity);
+                factory.serviceRegistration(ipAddr,hostName);
             }
             catch (Exception e)
             {

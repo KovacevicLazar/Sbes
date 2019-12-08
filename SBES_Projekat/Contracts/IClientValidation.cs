@@ -18,6 +18,6 @@ namespace Contracts
 
 
         [OperationContract]
-        bool serviceRegistration(string ipAddr, string hostName, EndpointIdentity ServiceID);
+        bool serviceRegistration(string ipAddr, string hostName);
     }
 }

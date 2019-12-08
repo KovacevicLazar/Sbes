@@ -27,8 +27,8 @@ namespace Server
 
             using (WCFServiceRegister proxy = new WCFServiceRegister(binding, new EndpointAddress(new Uri("net.tcp://localhost:9998/DomenController"))))
             {
-                EndpointIdentity ei = EndpointIdentity.CreateDnsIdentity("contoso.com");
-                proxy.SendIpAddrAndHostName(serviceIPAddr, service, null);
+                //EndpointAddress endpointAddress= new EndpointAddress(new Uri("net.tcp://localhost:9999/WCFService"), EndpointIdentity.CreateDnsIdentity("WCFService")); //DA LI OVDE PRAVIMO IDENTITI ILI NA TGS, AKO OVDE, KAKO GA POSLATI NA TGS
+                proxy.SendIpAddrAndHostName(serviceIPAddr, service);
             }
 
             Console.ReadLine();

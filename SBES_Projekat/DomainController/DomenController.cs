@@ -18,9 +18,16 @@ namespace DC
             return TGS.serserviceExists(hostName);
         }
 
-        public bool serviceRegistration(string ipAddr, string hostName)
+        public bool serviceRegistration(string ipAddr, string hostName, string userName)
         {
+            AS.serviceRegistration(userName);
             return TGS.serviceRegistration(ipAddr,hostName);
+        }
+
+        public bool serviceSingOut(string ipAddr, string hostName, string username)
+        {
+            AS.serviceSingOut(username);
+            return TGS.serviceSingOut(ipAddr, hostName, username);
         }
 
         public bool ValidateUser(string username, string password)

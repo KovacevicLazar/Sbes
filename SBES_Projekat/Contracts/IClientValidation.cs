@@ -18,6 +18,9 @@ namespace Contracts
 
 
         [OperationContract]
-        bool serviceRegistration(string ipAddr, string hostName);
+        bool serviceRegistration(string ipAddr, string hostName, string username);
+
+        [OperationContract]
+        bool serviceSingOut(string ipAddr, string hostName, string username);
     }
 }

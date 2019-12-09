@@ -10,12 +10,12 @@ namespace DC
     public class TicketGrantingService
     {
         //<IPaddr,HostName>
-        private Dictionary<string, string> ipAddrAndHostName = new Dictionary<string, string>();
+        private static Dictionary<string, string> ipAddrAndHostName = new Dictionary<string, string>();
 
         //<hostName,ServiceID>
         private static Dictionary<string, EndpointIdentity> activeServices = new Dictionary<string, EndpointIdentity>();
 
-        public Dictionary<string, string> IpAddrAndHostName { get => ipAddrAndHostName; set => ipAddrAndHostName = value; }
+        public static Dictionary<string, string> IpAddrAndHostName { get => ipAddrAndHostName; set => ipAddrAndHostName = value; }
         public static Dictionary<string, EndpointIdentity> ActiveServices { get => activeServices; set => activeServices = value; }
 
         public bool serserviceExists(string hostName)
@@ -43,15 +43,22 @@ namespace DC
                 Console.WriteLine("Servis {0}/{1} has been launched", ipAddr, hostName);
                 IpAddrAndHostName[ipAddr] = hostName;
                 EndpointAddress endpointAddress = new EndpointAddress(new Uri("net.tcp://localhost:9999/WCFService"), EndpointIdentity.CreateDnsIdentity("WCFService"));
-                ActiveServices.Add(hostName, endpointAddress.Identity);
+                ActiveServices[hostName]= endpointAddress.Identity;
                 return true;
             }
         }
 
 
-        //
-        //Dodavanje metode za brisanje servisa sa liste aktivnih..?
-        //
+        public bool serviceSingOut(string ipAddr, string hostName, string userName)
+        {
+            if (ActiveServices.ContainsKey(hostName))
+            {
+                ActiveServices.Remove(hostName);
+                return true;
+            }
+            return false;
+        }
+
 
     }
 }

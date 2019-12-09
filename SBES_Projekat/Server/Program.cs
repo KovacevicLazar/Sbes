@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using System;
+using System.Security.Principal;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 
@@ -9,8 +10,10 @@ namespace Server
 	{
 		static void Main(string[] args)
 		{
+            WindowsIdentity id = WindowsIdentity.GetCurrent();
 
-			NetTcpBinding binding = new NetTcpBinding();
+
+            NetTcpBinding binding = new NetTcpBinding();
 
             string address = "net.tcp://";
             string serviceIPAddr = "localhost:9999";
@@ -28,16 +31,21 @@ namespace Server
             using (WCFServiceRegister proxy = new WCFServiceRegister(binding, new EndpointAddress(new Uri("net.tcp://localhost:9998/DomenController"))))
             {
                 //EndpointAddress endpointAddress= new EndpointAddress(new Uri("net.tcp://localhost:9999/WCFService"), EndpointIdentity.CreateDnsIdentity("WCFService")); //DA LI OVDE PRAVIMO IDENTITI ILI NA TGS, AKO OVDE, KAKO GA POSLATI NA TGS
-                proxy.SendIpAddrAndHostName(serviceIPAddr, service);
+                proxy.Registration(serviceIPAddr, service, id.Name);
             }
 
             Console.ReadLine();
 
-			//
-			//Ovde bi trebalo javiti TGS-u da servis vise nije aktivan
-			//
+            //
+            //Ovde bi trebalo javiti TGS-u da servis vise nije aktivan
+            //
+            using (WCFServiceRegister proxy = new WCFServiceRegister(binding, new EndpointAddress(new Uri("net.tcp://localhost:9998/DomenController"))))
+            {
+                //EndpointAddress endpointAddress= new EndpointAddress(new Uri("net.tcp://localhost:9999/WCFService"), EndpointIdentity.CreateDnsIdentity("WCFService")); //DA LI OVDE PRAVIMO IDENTITI ILI NA TGS, AKO OVDE, KAKO GA POSLATI NA TGS
+                proxy.serviceSingOut(serviceIPAddr, service, id.Name);
+            }
 
-			host.Close();
+            host.Close();
 
 		}
 	}

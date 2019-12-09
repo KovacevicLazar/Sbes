@@ -31,6 +31,7 @@ namespace Client
 			string authenticationService = "DomenController";
 			string service = "WCFService";
 
+            bool servisPostoji = false;
 
 
 			using (WCFClientAuthenticator authenticator = new WCFClientAuthenticator(binding, new EndpointAddress(new Uri(address + authenticationPort + "/" + authenticationService))))
@@ -41,10 +42,12 @@ namespace Client
                     if (authenticator.ServiceExist(service))
                     {
                         Console.WriteLine(service + " exist.");
+                        servisPostoji = true;
                     }
                     else
                     {
                         Console.WriteLine(service + " not exist.");
+                        servisPostoji = false;
                     }
                 }
 				else
@@ -53,11 +56,14 @@ namespace Client
 				}
 			}
 
-			using (WCFClient proxy = new WCFClient(binding, new EndpointAddress(new Uri(address + servicePort + "/" + service))))
-			{
-				proxy.SendMessage("msg", new byte[] { 1, 2, 3 });
-			}
+            if (servisPostoji)
+            {
 
+                using (WCFClient proxy = new WCFClient(binding, new EndpointAddress(new Uri(address + servicePort + "/" + service))))
+                {
+                    proxy.SendMessage("msg", new byte[] { 1, 2, 3 });
+                }
+            }
 				/// Create a signature using SHA1 hash algorithm
 				//byte[] signature = DigitalSignature.Create();
 				//proxy.SendMessage();

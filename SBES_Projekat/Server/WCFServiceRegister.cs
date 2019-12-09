@@ -31,11 +31,23 @@ namespace Server
             factory = CreateChannel();
         }
 
-        public void SendIpAddrAndHostName(string ipAddr, string hostName)
+        public void Registration(string ipAddr, string hostName, string username)
         {
             try
             {
-                factory.serviceRegistration(ipAddr,hostName);
+                factory.serviceRegistration(ipAddr,hostName,username);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("[SendMessage] ERROR = {0}", e.Message);
+            }
+        }
+
+        public void serviceSingOut(string ipAddr, string hostName, string userName)
+        {
+            try
+            {
+                factory.serviceSingOut(ipAddr, hostName,userName);
             }
             catch (Exception e)
             {

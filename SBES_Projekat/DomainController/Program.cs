@@ -22,14 +22,23 @@ namespace DC
 			host.Description.Behaviors.Remove(typeof(ServiceDebugBehavior));
 			host.Description.Behaviors.Add(new ServiceDebugBehavior() { IncludeExceptionDetailInFaults = true });
 
-			//host.Authorization.ServiceAuthorizationManager = new CustomServiceAuthorizationManager();
+            //host.Authorization.ServiceAuthorizationManager = new CustomServiceAuthorizationManager();
 
-			//host.Authorization.PrincipalPermissionMode = PrincipalPermissionMode.Custom;
-			//List<IAuthorizationPolicy> policies = new List<IAuthorizationPolicy>();
-			//policies.Add(new CustomAuthorizationPolicy());
-			//host.Authorization.ExternalAuthorizationPolicies = policies.AsReadOnly();
+            //host.Authorization.PrincipalPermissionMode = PrincipalPermissionMode.Custom;
+            //List<IAuthorizationPolicy> policies = new List<IAuthorizationPolicy>();
+            //policies.Add(new CustomAuthorizationPolicy());
+            //host.Authorization.ExternalAuthorizationPolicies = policies.AsReadOnly();
 
-			host.Open();
+            // podesavanje logovanja
+            ServiceSecurityAuditBehavior newAudit = new ServiceSecurityAuditBehavior();
+            newAudit.AuditLogLocation = AuditLogLocation.Application;
+            newAudit.ServiceAuthorizationAuditLevel = AuditLevel.SuccessOrFailure;
+            newAudit.SuppressAuditFailure = true;
+
+            host.Description.Behaviors.Remove<ServiceSecurityAuditBehavior>();
+            host.Description.Behaviors.Add(newAudit);
+
+            host.Open();
 			Console.WriteLine("Domain controller is opened. Press <enter> to finish...");
 			Console.ReadLine();
 

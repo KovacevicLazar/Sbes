@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Manager
 {
-    class Audit : IDisposable
+    public class Audit : IDisposable
     {
         private static EventLog customLog = null;
         const string SourceName = "Manager.Audit";

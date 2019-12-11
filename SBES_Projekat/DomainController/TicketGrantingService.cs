@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Manager;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DC
@@ -22,11 +24,36 @@ namespace DC
         {
             if (ActiveServices.ContainsKey(hostName))
             {
+                // log action
+
+                CustomPrincipal principal = Thread.CurrentPrincipal as CustomPrincipal;
+                try
+                {
+                    // Audit.ValidationSuccess(principal.Identity.Name); //Treba prslediti hostNemeServisa?
+                    Audit.ValidationFailed(hostName);
+                }
+                catch (ArgumentException ae)
+                {
+                    Console.WriteLine(ae.Message);
+                }
                 //Ovde treba generisati tajni kljuc koji treba proslediti klijentu i serveru
                 return true;
             }
             else
             {
+                // log action
+
+               CustomPrincipal principal = Thread.CurrentPrincipal as CustomPrincipal;
+                try
+                {
+                    // Audit.ValidationFailed(principal.Identity.Name); //Treba prslediti hostNemeServisa?
+                    Audit.ValidationFailed(hostName);
+                }
+                catch (ArgumentException ae)
+                {
+                    Console.WriteLine(ae.Message);
+                }
+
                 return false;
             }
         }

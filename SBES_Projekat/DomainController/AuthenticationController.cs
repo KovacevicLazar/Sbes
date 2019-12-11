@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Manager;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DC
@@ -10,6 +13,7 @@ namespace DC
     {
 		private Dictionary<string, string> RegisteredUsers;
         private static Dictionary<string, string> registeredService = new Dictionary<string, string>();
+        
 
         public AuthenticationController()
 		{
@@ -25,8 +29,39 @@ namespace DC
 			if (!RegisteredUsers.ContainsKey(username))
 				throw new Exception("No shuch user.");
 
-			if (RegisteredUsers[username] == password)
-				return true;
+            if (RegisteredUsers[username] == password)
+            {
+                // log action
+
+               // CustomPrincipal principal = Thread.CurrentPrincipal as CustomPrincipal; //proveriti zasto je null
+                try
+                {
+                    // Audit.AuthenticationSuccess(principal.Identity.Name);
+                    Audit.AuthenticationSuccess(username);
+                }
+                catch (ArgumentException ae)
+                {
+                    Console.WriteLine(ae.Message);
+                }
+               
+                return true;
+            }
+            else
+            {
+                // log action
+
+                CustomPrincipal principal = Thread.CurrentPrincipal as CustomPrincipal;
+                try
+                {
+                    // Audit.AuthenticationFailed(principal.Identity.Name);
+                    Audit.AuthenticationFailed(username);
+                }
+                catch (ArgumentException ae)
+                {
+                    Console.WriteLine(ae.Message);
+                }
+
+            }
 			return false;
 		}
         public bool serviceRegistration(string userName)

@@ -17,7 +17,7 @@ namespace DC
 			NetTcpBinding binding = new NetTcpBinding();
 
 			ServiceHost host = new ServiceHost(typeof(DomenController));
-			host.AddServiceEndpoint(typeof(IClientValidation), binding, address);
+			host.AddServiceEndpoint(typeof(IClientConnection), binding, address);
 
 			host.Description.Behaviors.Remove(typeof(ServiceDebugBehavior));
 			host.Description.Behaviors.Add(new ServiceDebugBehavior() { IncludeExceptionDetailInFaults = true });

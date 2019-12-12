@@ -11,9 +11,9 @@ using Manager;
 
 namespace Server
 {
-    class WCFServiceRegister : ChannelFactory<IClientValidation>, IDisposable
+    class WCFServiceRegister : ChannelFactory<IClientConnection>, IDisposable
     {
-        IClientValidation factory;
+        IClientConnection factory;
 
         public WCFServiceRegister(NetTcpBinding binding, EndpointAddress address)
             : base(binding, address)

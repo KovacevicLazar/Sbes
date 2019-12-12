@@ -40,6 +40,7 @@
     <Compile Include="Logger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="DomenController.cs" />
+    <Compile Include="ServiceEntity.cs" />
     <Compile Include="TicketGrantingService.cs" />
   </ItemGroup>
   <ItemGroup>

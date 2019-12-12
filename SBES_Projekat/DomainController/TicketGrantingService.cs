@@ -6,86 +6,40 @@ using System.ServiceModel;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Contracts;
 
 namespace DC
 {
-    public class TicketGrantingService
-    {
-        //<IPaddr,HostName>
-        private static Dictionary<string, string> ipAddrAndHostName = new Dictionary<string, string>();
+	public class TicketGrantingService : ITicketGrantingService
+	{
+		//<hostName,ServiceID>
+		private static Dictionary<string, ServiceEntity> activeServices;
 
-        //<hostName,ServiceID>
-        private static Dictionary<string, EndpointIdentity> activeServices = new Dictionary<string, EndpointIdentity>();
+		public TicketGrantingService()
+		{
+			activeServices = new Dictionary<string, ServiceEntity>();
+		}
 
-        public static Dictionary<string, string> IpAddrAndHostName { get => ipAddrAndHostName; set => ipAddrAndHostName = value; }
-        public static Dictionary<string, EndpointIdentity> ActiveServices { get => activeServices; set => activeServices = value; }
+		public string GetServiceEndpoint(string serviceName)
+		{
+			if (ServiceExists(serviceName))
+			{
+				return "net.tcp://localhost:" + activeServices[serviceName].port + "/" + activeServices[serviceName].serviceName;
+			}
+			else
+			{
+				return null;
+			}
+		}
 
-        public bool serserviceExists(string hostName)
-        {
-            if (ActiveServices.ContainsKey(hostName))
-            {
-                // log action
-
-                CustomPrincipal principal = Thread.CurrentPrincipal as CustomPrincipal;
-                try
-                {
-                    // Audit.ValidationSuccess(principal.Identity.Name); //Treba prslediti hostNemeServisa?
-                    Audit.ValidationFailed(hostName);
-                }
-                catch (ArgumentException ae)
-                {
-                    Console.WriteLine(ae.Message);
-                }
-                //Ovde treba generisati tajni kljuc koji treba proslediti klijentu i serveru
-                return true;
-            }
-            else
-            {
-                // log action
-
-               CustomPrincipal principal = Thread.CurrentPrincipal as CustomPrincipal;
-                try
-                {
-                    // Audit.ValidationFailed(principal.Identity.Name); //Treba prslediti hostNemeServisa?
-                    Audit.ValidationFailed(hostName);
-                }
-                catch (ArgumentException ae)
-                {
-                    Console.WriteLine(ae.Message);
-                }
-
-                return false;
-            }
-        }
-        
-        public bool serviceRegistration(string ipAddr,string hostName)
-        {
-            if (ActiveServices.ContainsKey(ipAddr))
-            {
-                return false; //Servis je vec na spisku startovanih servisa
-            }
-            else
-            {
-
-                Console.WriteLine("Servis {0}/{1} has been launched", ipAddr, hostName);
-                IpAddrAndHostName[ipAddr] = hostName;
-                EndpointAddress endpointAddress = new EndpointAddress(new Uri("net.tcp://localhost:9999/WCFService"), EndpointIdentity.CreateDnsIdentity("WCFService"));
-                ActiveServices[hostName]= endpointAddress.Identity;
-                return true;
-            }
-        }
-
-
-        public bool serviceSingOut(string ipAddr, string hostName, string userName)
-        {
-            if (ActiveServices.ContainsKey(hostName))
-            {
-                ActiveServices.Remove(hostName);
-                return true;
-            }
-            return false;
-        }
-
-
-    }
+		public string GenerateSecretKey(string encriptionKey)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public bool ServiceExists(string serviceName)
+		{
+			return activeServices.ContainsKey(serviceName);
+		}
+	}
 }

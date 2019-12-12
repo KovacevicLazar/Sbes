@@ -8,31 +8,25 @@ using Contracts;
 
 namespace DC
 {
-	public class DomenController : IClientValidation
+	public class DomenController : IClientConnection
 	{
 		AuthenticationController AS = new AuthenticationController();
 		TicketGrantingService TGS = new TicketGrantingService();
 
-        public bool ServiceExist(string hostName)
-        {
-            return TGS.serserviceExists(hostName);
-        }
+		public DomenController(AuthenticationController aS, TicketGrantingService tGS)
+		{
+			AS = aS ?? throw new ArgumentNullException(nameof(aS));
+			TGS = tGS ?? throw new ArgumentNullException(nameof(tGS));
+		}
 
-        public bool serviceRegistration(string ipAddr, string hostName, string userName)
-        {
-            AS.serviceRegistration(userName);
-            return TGS.serviceRegistration(ipAddr,hostName);
-        }
 
-        public bool serviceSingOut(string ipAddr, string hostName, string username)
-        {
-            AS.serviceSingOut(username);
-            return TGS.serviceSingOut(ipAddr, hostName, username);
-        }
-
-        public bool ValidateUser(string username, string password)
+		public bool ValidateUser(string username, string password)
 		{
 			return AS.Authenticate(username, password);
+		}
+		public Tuple<string, string> SendServiceRequest(string service)
+		{
+			string serviceEndpoint = TGS.GetServiceEndpoint(service);
 		}
 	}
 }

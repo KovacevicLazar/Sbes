@@ -25,45 +25,28 @@ namespace Client
 			binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
 			binding.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.EncryptAndSign;
 
+			string username = "DESKTOP-IJMHSLM\\Luka";
+
 			string address = "net.tcp://localhost:";
 			string servicePort = "9999";
 			string authenticationPort = "9998";
 			string authenticationService = "DomenController";
-			string service = "WCFService";
 
-            bool servisPostoji = false;
+			string service = "WCFService";
+			string serviceEndpoint;
 
 
 			using (WCFClientAuthenticator authenticator = new WCFClientAuthenticator(binding, new EndpointAddress(new Uri(address + authenticationPort + "/" + authenticationService))))
 			{
-				if(authenticator.Authenticate(id.Name, "password"))
-				{
-                    Console.WriteLine(id.Name + " successfully logged in.");
-                    if (authenticator.ServiceExist(service))
-                    {
-                        Console.WriteLine(service + " exist.");
-                        servisPostoji = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine(service + " not exist.");
-                        servisPostoji = false;
-                    }
-                }
-				else
-				{
-					Console.WriteLine("Invalid password.");
-				}
+				///	Slanje ID klijenta, PASSWORD klijenta
+				serviceEndpoint = authenticator.Connect(username, "password", service);
 			}
-
-            if (servisPostoji)
-            {
-
+			
+			///	TODO: Komunikacija sa servisom
                 using (WCFClient proxy = new WCFClient(binding, new EndpointAddress(new Uri(address + servicePort + "/" + service))))
                 {
                     proxy.SendMessage("msg", new byte[] { 1, 2, 3 });
                 }
-            }
 				/// Create a signature using SHA1 hash algorithm
 				//byte[] signature = DigitalSignature.Create();
 				//proxy.SendMessage();

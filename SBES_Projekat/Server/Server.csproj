@@ -45,7 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="Connector.cs" />
+    <Compile Include="SecretKey.cs" />
+    <Compile Include="Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceDataManagement.cs" />
     <Compile Include="WCFService.cs" />

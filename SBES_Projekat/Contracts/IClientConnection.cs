@@ -8,11 +8,11 @@ using System.ServiceModel;
 namespace Contracts
 {
 	[ServiceContract]
-	public interface IClientConnection
+	public interface ITicketGrantingService
 	{
 		[OperationContract]
 		bool ValidateUser(string username, string password);
 		[OperationContract]
-		string SendServiceRequest(string service);
+		Tuple<string, string> SendServiceRequest(string service, string username);
     }
 }

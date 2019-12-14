@@ -8,7 +8,7 @@ using Contracts;
 
 namespace DC
 {
-	public class DomenController : IClientConnection
+	public class DomenController : ITicketGrantingService
 	{
 		AuthenticationController AS = new AuthenticationController();
 		TicketGrantingService TGS = new TicketGrantingService();
@@ -19,14 +19,19 @@ namespace DC
 			TGS = tGS ?? throw new ArgumentNullException(nameof(tGS));
 		}
 
+		public DomenController()
+		{
+		}
 
 		public bool ValidateUser(string username, string password)
 		{
 			return AS.Authenticate(username, password);
 		}
-		public Tuple<string, string> SendServiceRequest(string service)
+
+		public Tuple<string, string> SendServiceRequest(string service, string username)
 		{
-			string serviceEndpoint = TGS.GetServiceEndpoint(service);
+			// TODO: provera greske
+			return TGS.GetServiceEndpointAndSecretKey(service, AS.GetHashedUserPassword(username));
 		}
 	}
 }

@@ -11,9 +11,9 @@ using Manager;
 
 namespace Server
 {
-    class WCFServiceRegister : ChannelFactory<IClientConnection>, IDisposable
+    class WCFServiceRegister : ChannelFactory<ITicketGrantingService>, IDisposable
     {
-        IClientConnection factory;
+        ITicketGrantingService factory;
 
         public WCFServiceRegister(NetTcpBinding binding, EndpointAddress address)
             : base(binding, address)
@@ -31,11 +31,11 @@ namespace Server
             factory = CreateChannel();
         }
 
-        public void Registration(string ipAddr, string hostName, string username)
+        public void Registration(string serviceName, string servicePassword, string port)
         {
             try
             {
-                factory.serviceRegistration(ipAddr,hostName,username);
+                factory.RegisterService(serviceName, servicePassword, port);
             }
             catch (Exception e)
             {
@@ -43,6 +43,7 @@ namespace Server
             }
         }
 
+		// TODO:
         public void serviceSingOut(string ipAddr, string hostName, string userName)
         {
             try

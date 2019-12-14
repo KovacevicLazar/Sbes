@@ -9,12 +9,19 @@ namespace Server
 {
 	public class WCFService : IWCFContracts
 	{
-		public void SendMessage(string message, byte[] sign)
+		private string secretKey;
+
+		public void SetSecretKey(string key)
 		{
-			string s = "";
-			foreach (byte b in sign)
-				s += b;
-			Console.WriteLine($"Klijent poslao: {message};\nPotpisao: {s}.");
+			secretKey = key; 
+		}
+
+		public void SendMessage(string message)
+		{
+			///TODO: implementirati dekripciju
+			///string decryptedMessage = Decrypt(message, secretKey);
+
+
 		}
 
 		public void TestCommunication()

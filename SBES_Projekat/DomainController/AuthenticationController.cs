@@ -39,5 +39,10 @@ namespace DC
 				return false;
             }
 		}
-    }
+
+		public string GetHashedUserPassword(string username)
+		{
+			return RegisteredUsers[username];
+		}
+	}
 }

@@ -9,7 +9,10 @@ namespace Contracts
 	public interface ITicketGrantingService
 	{
 		bool ServiceExists(string serviceName);
-		string GetServiceEndpoint(string serviceName);
-		string GenerateSecretKey(string encriptionKey);
+		Tuple<string, string> GetServiceEndpointAndSecretKey(string serviceName, string hashedClientPassword);
+		string Encript(string input, string key);
+		string Decript(string input, string key);
+		string GenerateSecretKey();
+		void RegisterService(string serviceName, string servicePassword, string port);
 	}
 }

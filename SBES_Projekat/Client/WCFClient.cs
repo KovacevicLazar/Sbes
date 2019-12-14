@@ -29,11 +29,13 @@ namespace Client
 
 			factory = CreateChannel();
 		}
-		public void SendMessage(string message, byte[] sign)
+		public void SendMessage(string message, string key)
 		{
 			try
 			{
-				factory.SendMessage(message, sign);
+				///TODO: enkripcija poruke pre slanja
+				///string encriptedMessage = Encrypt(message, key);
+				///factory.SendMessage(encryptedMessage);
 			}
 			catch (Exception e)
 			{

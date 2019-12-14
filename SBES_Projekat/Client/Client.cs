@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace Client
 {
-	public class Program
+	public class Client
 	{
 		static void Main(string[] args)
 		{
@@ -31,21 +31,25 @@ namespace Client
 			string servicePort = "9999";
 			string authenticationPort = "9998";
 			string authenticationService = "DomenController";
-
 			string service = "WCFService";
-			string serviceEndpoint;
+
+			Tuple<string, string> serviceEndpointAndKey;
+			string secretKey = null;
 
 
 			using (WCFClientAuthenticator authenticator = new WCFClientAuthenticator(binding, new EndpointAddress(new Uri(address + authenticationPort + "/" + authenticationService))))
 			{
 				///	Slanje ID klijenta, PASSWORD klijenta
-				serviceEndpoint = authenticator.Connect(username, "password", service);
+				serviceEndpointAndKey = authenticator.Connect(username, "password", service);
+				/// TODO: dekriptovanje tajnog kljuca
+				/// secretKey = DecryptSecretKey(serviceEndpointAndKey);
+				while (serviceEndpointAndKey == null) System.Threading.Thread.Sleep(100);
 			}
 			
 			///	TODO: Komunikacija sa servisom
-                using (WCFClient proxy = new WCFClient(binding, new EndpointAddress(new Uri(address + servicePort + "/" + service))))
+                using (WCFClient proxy = new WCFClient(binding, new EndpointAddress(new Uri(serviceEndpointAndKey.Item1))))
                 {
-                    proxy.SendMessage("msg", new byte[] { 1, 2, 3 });
+                    proxy.SendMessage("msg", secretKey);
                 }
 				/// Create a signature using SHA1 hash algorithm
 				//byte[] signature = DigitalSignature.Create();

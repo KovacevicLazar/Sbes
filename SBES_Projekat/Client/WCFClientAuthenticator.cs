@@ -11,9 +11,9 @@ using Client.Exceptions;
 
 namespace Client
 {
-	public class WCFClientAuthenticator : ChannelFactory<IClientConnection>, IDisposable
+	public class WCFClientAuthenticator : ChannelFactory<ITicketGrantingService>, IDisposable
 	{
-		IClientConnection factory;
+		ITicketGrantingService factory;
 
 		public WCFClientAuthenticator(NetTcpBinding binding, EndpointAddress address)
 			: base(binding, address)
@@ -31,16 +31,16 @@ namespace Client
 			//this.Credentials.ClientCertificate.Certificate = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, cltCertCN);
 			#endregion
 		}
-		public string Connect(string username, string password, string service)
+		public Tuple<string, string> Connect(string username, string password, string service)
 		{
 			try
 			{
 				if (Authenticate(username, password))
 				{
-					string serviceEndpoint;
-					if ((serviceEndpoint = SendSeviceRequest(service)) != null)
+					Tuple<string, string> serviceEndpoint = factory.SendServiceRequest(service, username);
+					if (serviceEndpoint != null)
 					{
-						Console.WriteLine($"Konekcija sa '{serviceEndpoint}' uspesno ostvarena");
+						Console.WriteLine($"'{serviceEndpoint}' pronadjen");
 						return serviceEndpoint;
 					}
 					else
@@ -79,15 +79,6 @@ namespace Client
 				Console.WriteLine("[SendMessage] ERROR = {0}", e.Message);
 			}
 			return ret;
-		}
-		/// <summary>
-		/// Salje zahtev za endpoint adresu ka trazenom servisu
-		/// </summary>
-		/// <param name="service">Naziv servisa</param>
-		/// <returns>Endpoint addr servisa ako postoji; null ako ne postoji</returns>
-		private string SendSeviceRequest(string service)
-		{
-			return factory.SendServiceRequest(service);
 		}
 
 		public void Dispose()

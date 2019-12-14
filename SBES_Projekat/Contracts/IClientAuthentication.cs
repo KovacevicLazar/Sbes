@@ -9,5 +9,6 @@ namespace Contracts
 	public interface IClientAuthentication
 	{
 		bool Authenticate(string username, string passord);
+		string GetHashedUserPassword(string username);
 	}
 }

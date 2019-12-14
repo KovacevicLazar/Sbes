@@ -7,12 +7,10 @@ using System.Threading.Tasks;
 
 namespace Contracts
 {
-    [ServiceContract]
-    public interface IWCFContracts
-    {
+	[ServiceContract]
+	public interface ITicketGrantingService
+	{
 		[OperationContract]
-		void TestCommunication();
-		[OperationContract]
-		void SendMessage(string message);
+		void SendEncriptedSecretKey(string key);
 	}
 }

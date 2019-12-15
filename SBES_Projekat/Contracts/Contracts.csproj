@@ -46,6 +46,7 @@
     <Compile Include="IClientConnection.cs" />
     <Compile Include="IDataManagement.cs" />
     <Compile Include="IServiceConnection.cs" />
+    <Compile Include="IServiceKeyHandler.cs" />
     <Compile Include="ITicketGrantingService.cs" />
     <Compile Include="IWCFContracts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

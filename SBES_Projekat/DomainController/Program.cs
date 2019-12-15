@@ -17,26 +17,7 @@ namespace DC
 			NetTcpBinding binding = new NetTcpBinding();
 
 			ServiceHost host = new ServiceHost(typeof(DomenController));
-			host.AddServiceEndpoint(typeof(ITicketGrantingService), binding, address);
-
-			host.Description.Behaviors.Remove(typeof(ServiceDebugBehavior));
-			host.Description.Behaviors.Add(new ServiceDebugBehavior() { IncludeExceptionDetailInFaults = true });
-
-            //host.Authorization.ServiceAuthorizationManager = new CustomServiceAuthorizationManager();
-
-            //host.Authorization.PrincipalPermissionMode = PrincipalPermissionMode.Custom;
-            //List<IAuthorizationPolicy> policies = new List<IAuthorizationPolicy>();
-            //policies.Add(new CustomAuthorizationPolicy());
-            //host.Authorization.ExternalAuthorizationPolicies = policies.AsReadOnly();
-
-            // podesavanje logovanja
-            ServiceSecurityAuditBehavior newAudit = new ServiceSecurityAuditBehavior();
-            newAudit.AuditLogLocation = AuditLogLocation.Application;
-            newAudit.ServiceAuthorizationAuditLevel = AuditLevel.SuccessOrFailure;
-            newAudit.SuppressAuditFailure = true;
-
-            host.Description.Behaviors.Remove<ServiceSecurityAuditBehavior>();
-            host.Description.Behaviors.Add(newAudit);
+			host.AddServiceEndpoint(typeof(IClientConnection), binding, address);
 
             host.Open();
 			Console.WriteLine("Domain controller is opened. Press <enter> to finish...");

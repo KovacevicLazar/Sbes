@@ -8,7 +8,7 @@ using System.ServiceModel;
 namespace Contracts
 {
 	[ServiceContract]
-	public interface ITicketGrantingService
+	public interface IClientConnection
 	{
 		[OperationContract]
 		bool ValidateUser(string username, string password);

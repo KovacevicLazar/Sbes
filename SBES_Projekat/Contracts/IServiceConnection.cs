@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Contracts
 {
-	[ServiceContract]
-	public interface ITicketGrantingService
+	public interface IServiceConnection
 	{
-		[OperationContract]
-		void SendEncriptedSecretKey(string key);
+		void RegisterService(string serviceName, string servicePassword, string port);
+		void SignOutService(string serviceName);
 	}
 }

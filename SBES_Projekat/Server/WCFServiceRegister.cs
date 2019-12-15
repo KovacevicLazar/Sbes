@@ -7,13 +7,12 @@ using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts;
-using Manager;
 
 namespace Server
 {
-    class WCFServiceRegister : ChannelFactory<ITicketGrantingService>, IDisposable
+    class WCFServiceRegister : ChannelFactory<IServiceConnection>, IDisposable
     {
-        ITicketGrantingService factory;
+        IServiceConnection factory;
 
         public WCFServiceRegister(NetTcpBinding binding, EndpointAddress address)
             : base(binding, address)
@@ -44,11 +43,11 @@ namespace Server
         }
 
 		// TODO:
-        public void serviceSingOut(string ipAddr, string hostName, string userName)
+        public void serviceSingOut(string serviceName)
         {
             try
             {
-                factory.serviceSingOut(ipAddr, hostName,userName);
+                factory.SignOutService(serviceName);
             }
             catch (Exception e)
             {

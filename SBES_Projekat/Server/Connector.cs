@@ -7,7 +7,7 @@ using Contracts;
 
 namespace Server
 {
-	public class Connector : ITicketGrantingService
+	public class Connector
 	{
 		public void SendEncriptedSecretKey(string key)
 		{

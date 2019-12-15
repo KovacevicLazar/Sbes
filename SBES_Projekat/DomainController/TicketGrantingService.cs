@@ -1,5 +1,4 @@
-﻿using Manager;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
@@ -10,14 +9,14 @@ using Contracts;
 
 namespace DC
 {
-	public class TicketGrantingService : ChannelFactory<ITicketGrantingService>, ITicketGrantingService
+	public class TicketGrantingService : ChannelFactory<IServiceKeyHandler>, ITicketGrantingService
 	{
 		//<hostName,ServiceID>
 		private static Dictionary<string, ServiceEntity> activeServices;
 		// <client, secretKey>
 		private static Dictionary<string, string> createdSecretKeys;
 
-		ITicketGrantingService factory;
+		IServiceKeyHandler factory;
 
 		public TicketGrantingService()
 		{
@@ -70,5 +69,24 @@ namespace DC
 			throw new NotImplementedException();
 		}
 
+		public void SendEncriptedSecretKey(string key)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SignOutService(string serviceName)
+		{
+			activeServices.Remove(serviceName);
+		}
+
+		public bool ValidateUser(string username, string password)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Tuple<string, string> SendServiceRequest(string service, string username)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

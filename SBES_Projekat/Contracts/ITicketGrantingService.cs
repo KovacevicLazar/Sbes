@@ -14,5 +14,6 @@ namespace Contracts
 		string Decript(string input, string key);
 		string GenerateSecretKey();
 		void RegisterService(string serviceName, string servicePassword, string port);
+		void SignOutService(string serviceName);
 	}
 }

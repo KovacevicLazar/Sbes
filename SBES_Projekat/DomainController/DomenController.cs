@@ -8,7 +8,7 @@ using Contracts;
 
 namespace DC
 {
-	public class DomenController : ITicketGrantingService
+	public class DomenController : IClientConnection
 	{
 		AuthenticationController AS = new AuthenticationController();
 		TicketGrantingService TGS = new TicketGrantingService();

@@ -4,16 +4,15 @@ using System.Linq;
 using System.Text;
 using System.ServiceModel;
 using Contracts;
-using Manager;
 using System.Security.Principal;
 using System.Security.Cryptography.X509Certificates;
 using Client.Exceptions;
 
 namespace Client
 {
-	public class WCFClientAuthenticator : ChannelFactory<ITicketGrantingService>, IDisposable
+	public class WCFClientAuthenticator : ChannelFactory<IClientConnection>, IDisposable
 	{
-		ITicketGrantingService factory;
+		IClientConnection factory;
 
 		public WCFClientAuthenticator(NetTcpBinding binding, EndpointAddress address)
 			: base(binding, address)

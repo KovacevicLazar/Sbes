@@ -42,7 +42,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="IClientAuthentication.cs" />
     <Compile Include="IClientConnection.cs" />
     <Compile Include="IDataManagement.cs" />

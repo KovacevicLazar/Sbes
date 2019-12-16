@@ -20,7 +20,18 @@ namespace DC
 			host.AddServiceEndpoint(typeof(IClientConnection), binding, address);
 
             host.Open();
-			Console.WriteLine("Domain controller is opened. Press <enter> to finish...");
+
+
+            string addressForServer = "net.tcp://localhost:9997/ServiceConnection";
+            NetTcpBinding bindingForServer = new NetTcpBinding();
+
+            ServiceHost hostForServer = new ServiceHost(typeof(ServiceConnection));
+            hostForServer.AddServiceEndpoint(typeof(IServiceConnection), bindingForServer, addressForServer);
+
+            hostForServer.Open();
+
+
+            Console.WriteLine("Domain controller is opened. Press <enter> to finish...");
 			Console.ReadLine();
 
 			host.Close();

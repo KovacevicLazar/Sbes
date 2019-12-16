@@ -31,13 +31,14 @@ namespace Server
 			clientHost.Description.Behaviors.Add(new ServiceDebugBehavior() { IncludeExceptionDetailInFaults = true });
 
 			clientHost.Open();
-			Console.WriteLine("WCFService is opened. Press <enter> to finish...");
+			Console.WriteLine("WCFService is opened.");
 
 			/// Registrovanje servisa na TGS
-            using (WCFServiceRegister proxy = new WCFServiceRegister(binding, new EndpointAddress(new Uri("net.tcp://localhost:9998/DomenController"))))
+            using (WCFServiceRegister proxy = new WCFServiceRegister(binding, new EndpointAddress(new Uri("net.tcp://localhost:9997/ServiceConnection"))))
             {
                 //EndpointAddress endpointAddress= new EndpointAddress(new Uri("net.tcp://localhost:9999/WCFService"), EndpointIdentity.CreateDnsIdentity("WCFService")); //DA LI OVDE PRAVIMO IDENTITI ILI NA TGS, AKO OVDE, KAKO GA POSLATI NA TGS
-                proxy.Registration(serviceIPAddr, clientService, id.Name);
+                proxy.Registration(serviceIPAddr+clientPort, clientService, id.Name);
+                                   // local host +port je IP adresa, tako su nam reki na vezbama
             }
 
 			/// Otvaranje servisa za prijem tajnog kljuca
@@ -50,12 +51,14 @@ namespace Server
 
 			Console.WriteLine("Client connected with secret key: " + SecretKey.secretKey);
 
+
+            Console.WriteLine("Press <enter> to finish...");
 			Console.ReadLine();
 
             //
             //Ovde bi trebalo javiti TGS-u da servis vise nije aktivan
             //
-            using (WCFServiceRegister proxy = new WCFServiceRegister(binding, new EndpointAddress(new Uri("net.tcp://localhost:9998/DomenController"))))
+            using (WCFServiceRegister proxy = new WCFServiceRegister(binding, new EndpointAddress(new Uri("net.tcp://localhost:9997/ServiceConnection"))))
             {
                 //EndpointAddress endpointAddress= new EndpointAddress(new Uri("net.tcp://localhost:9999/WCFService"), EndpointIdentity.CreateDnsIdentity("WCFService")); //DA LI OVDE PRAVIMO IDENTITI ILI NA TGS, AKO OVDE, KAKO GA POSLATI NA TGS
                 proxy.serviceSingOut(clientService);

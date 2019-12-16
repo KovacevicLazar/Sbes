@@ -30,11 +30,11 @@ namespace Server
             factory = CreateChannel();
         }
 
-        public void Registration(string serviceName, string servicePassword, string port)
+        public void Registration(string IPAddr, string hostNane, string port)
         {
             try
             {
-                factory.RegisterService(serviceName, servicePassword, port);
+                factory.RegisterService(IPAddr, hostNane, port);
             }
             catch (Exception e)
             {
@@ -43,11 +43,11 @@ namespace Server
         }
 
 		// TODO:
-        public void serviceSingOut(string serviceName)
+        public void serviceSingOut(string hostName)
         {
             try
             {
-                factory.SignOutService(serviceName);
+                factory.SignOutService(hostName);
             }
             catch (Exception e)
             {

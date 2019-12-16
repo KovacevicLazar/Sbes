@@ -41,10 +41,7 @@ namespace DC
 				return null;
 			}
 		}
-		public void RegisterService(string serviceName, string servicePassword, string port)
-		{
-			activeServices.Add(serviceName, new ServiceEntity(serviceName, servicePassword, port));
-		}
+		
 
 		public string GenerateSecretKey()
 		{
@@ -74,10 +71,7 @@ namespace DC
 			throw new NotImplementedException();
 		}
 
-		public void SignOutService(string serviceName)
-		{
-			activeServices.Remove(serviceName);
-		}
+		
 
 		public bool ValidateUser(string username, string password)
 		{
@@ -88,5 +82,19 @@ namespace DC
 		{
 			throw new NotImplementedException();
 		}
-	}
+
+
+        public void SignOutService(string hostName)
+        {
+        	activeServices.Remove(hostName);
+            Console.WriteLine("Seris {0} is closed.", hostName);
+        }
+
+        public void RegisterService(string IPAddr, string hostName, string port)
+        {
+        	activeServices.Add(hostName, new ServiceEntity(IPAddr, hostName, port));
+            Console.WriteLine("Seris {0} is opened.",hostName);
+        }
+
+    }
 }

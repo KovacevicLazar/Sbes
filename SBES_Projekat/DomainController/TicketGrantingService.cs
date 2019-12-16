@@ -11,8 +11,11 @@ namespace DC
 {
 	public class TicketGrantingService : ChannelFactory<IServiceKeyHandler>, ITicketGrantingService
 	{
-		//<hostName,ServiceID>
-		private static Dictionary<string, ServiceEntity> activeServices;
+        //<ipAddr,hostName>
+        private static Dictionary<string, string> dnsTable;
+
+        //<hostName,ServiceID>
+        private static Dictionary<string, ServiceEntity> activeServices;
 		// <client, secretKey>
 		private static Dictionary<string, string> createdSecretKeys;
 
@@ -93,6 +96,7 @@ namespace DC
         public void RegisterService(string IPAddr, string hostName, string port)
         {
         	activeServices.Add(hostName, new ServiceEntity(IPAddr, hostName, port));
+            dnsTable.Add(IPAddr, hostName);
             Console.WriteLine("Seris {0} is opened.",hostName);
         }
 

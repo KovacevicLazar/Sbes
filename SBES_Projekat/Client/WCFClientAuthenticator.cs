@@ -7,6 +7,7 @@ using Contracts;
 using System.Security.Principal;
 using System.Security.Cryptography.X509Certificates;
 using Client.Exceptions;
+using System.Security.Cryptography;
 
 namespace Client
 {
@@ -37,7 +38,15 @@ namespace Client
 				if (Authenticate(username, password))
 				{
 					Tuple<string, string> serviceEndpoint = factory.SendServiceRequest(service, username);
-					if (serviceEndpoint != null)
+
+
+                    string encriptSecretKey = serviceEndpoint.Item2;
+                    string secretKey= Decript(encriptSecretKey, username);
+
+                    serviceEndpoint.Item2.Replace(serviceEndpoint.Item2, secretKey);
+
+
+                    if (serviceEndpoint != null)
 					{
 						Console.WriteLine($"'{serviceEndpoint}' pronadjen");
 						return serviceEndpoint;
@@ -89,6 +98,27 @@ namespace Client
 
 			this.Close();
 		}
+
+
+        public string Decript(string input, string key)
+        {
+            //TODO
+
+            TripleDESCryptoServiceProvider desCryptoProvider = new TripleDESCryptoServiceProvider();
+            MD5CryptoServiceProvider hashMD5Provider = new MD5CryptoServiceProvider();
+
+            byte[] byteHash;
+            byte[] byteBuff;
+
+            byteHash = hashMD5Provider.ComputeHash(Encoding.UTF8.GetBytes(key));
+            desCryptoProvider.Key = byteHash;
+            desCryptoProvider.Mode = CipherMode.CBC; //ECB, CFB
+            byteBuff = Convert.FromBase64String(input);
+
+            string plaintext = Encoding.UTF8.GetString(desCryptoProvider.CreateDecryptor().TransformFinalBlock(byteBuff, 0, byteBuff.Length));
+            return plaintext;
+        }
+
 
 
         //public void TestCommunication()

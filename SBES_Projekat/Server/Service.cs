@@ -38,12 +38,13 @@ namespace Server
             {
                 //EndpointAddress endpointAddress= new EndpointAddress(new Uri("net.tcp://localhost:9999/WCFService"), EndpointIdentity.CreateDnsIdentity("WCFService")); //DA LI OVDE PRAVIMO IDENTITI ILI NA TGS, AKO OVDE, KAKO GA POSLATI NA TGS
                 proxy.Registration(serviceIPAddr+clientPort, clientService, id.Name);
-                                   // local host +port je IP adresa, tako su nam reki na vezbama
+                                   // local host +port je IP adresa, tako su nam rekli na vezbama
             }
 
+
 			/// Otvaranje servisa za prijem tajnog kljuca
-			ServiceHost connectionHost = new ServiceHost(typeof(Connector));
-			connectionHost.AddServiceEndpoint(typeof(ITicketGrantingService), binding, connectionEndpoint);
+			ServiceHost connectionHost = new ServiceHost(typeof(Connection));
+			connectionHost.AddServiceEndpoint(typeof(IServiceKeyHandler), binding, connectionEndpoint);
 			connectionHost.Open();
 			Console.WriteLine("Connector service is opened.");
 

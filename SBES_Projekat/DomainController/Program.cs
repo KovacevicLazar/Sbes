@@ -21,6 +21,7 @@ namespace DC
 
             host.Open();
 
+            //host za prijavu i odjavu servera->
 
             string addressForServer = "net.tcp://localhost:9997/ServiceConnection";
             NetTcpBinding bindingForServer = new NetTcpBinding();

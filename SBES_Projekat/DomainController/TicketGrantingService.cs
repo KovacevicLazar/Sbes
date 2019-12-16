@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.ServiceModel;
 using System.Text;
 using System.Threading;
@@ -25,6 +26,7 @@ namespace DC
 		{
 			if (activeServices == null) activeServices = new Dictionary<string, ServiceEntity>();
 			if (createdSecretKeys == null) createdSecretKeys = new Dictionary<string, string>();
+            if (dnsTable == null) dnsTable = new Dictionary<string, string>();
 		}
 
 		public Tuple<string, string> GetServiceEndpointAndSecretKey(string serviceName, string hashedClientPassword)
@@ -36,7 +38,9 @@ namespace DC
 				string clientEncriptedSecretKey = Encript(secretKey, hashedClientPassword);
 				string serviceEncriptedSecretKey = Encript(secretKey, activeServices[serviceName].servicePassword);
 
-				factory.SendEncriptedSecretKey(serviceEncriptedSecretKey);
+                string seckey = Decript(clientEncriptedSecretKey, hashedClientPassword); // nesto nije u redu
+
+				//factory.SendEncriptedSecretKey(serviceEncriptedSecretKey);
 				return new Tuple<string, string>(hostEndpoint, clientEncriptedSecretKey);
 			}
 			else
@@ -48,9 +52,10 @@ namespace DC
 
 		public string GenerateSecretKey()
 		{
-			// TODO: Implementirati generisanje tajnog kljuca
-			throw new NotImplementedException();
-		}
+            var key = "b14ca5898a4e4133bbce2ea2315a1916";
+            return key;
+
+        }
 		
 		public bool ServiceExists(string serviceName)
 		{
@@ -59,24 +64,51 @@ namespace DC
 
 		public string Encript(string input, string key)
 		{
-			//TODO
-			throw new NotImplementedException();
-		}
+            //TODO
+            TripleDESCryptoServiceProvider desCryptoProvider = new TripleDESCryptoServiceProvider();
+            MD5CryptoServiceProvider hashMD5Provider = new MD5CryptoServiceProvider();
+
+            byte[] byteHash;
+            byte[] byteBuff;
+
+            byteHash = hashMD5Provider.ComputeHash(Encoding.UTF8.GetBytes(key));
+            desCryptoProvider.Key = byteHash;
+            desCryptoProvider.Mode = CipherMode.CBC; //ECB, CFB
+            byteBuff = Encoding.UTF8.GetBytes(input);
+
+            string encoded = Convert.ToBase64String(desCryptoProvider.CreateEncryptor().TransformFinalBlock(byteBuff, 0, byteBuff.Length));
+            return encoded;
+        }
 
 		public string Decript(string input, string key)
 		{
-			//TODO
-			throw new NotImplementedException();
-		}
+            //TODO
 
-		public void SendEncriptedSecretKey(string key)
-		{
-			throw new NotImplementedException();
-		}
+            TripleDESCryptoServiceProvider desCryptoProvider = new TripleDESCryptoServiceProvider();
+            MD5CryptoServiceProvider hashMD5Provider = new MD5CryptoServiceProvider();
 
-		
+            byte[] byteHash;
+            byte[] byteBuff;
 
-		public bool ValidateUser(string username, string password)
+            byteHash = hashMD5Provider.ComputeHash(Encoding.UTF8.GetBytes(key));
+            desCryptoProvider.Key = byteHash;
+            desCryptoProvider.Mode = CipherMode.CBC; //ECB, CFB
+            byteBuff = Convert.FromBase64String(input);
+
+            string plaintext = Encoding.UTF8.GetString(desCryptoProvider.CreateDecryptor().TransformFinalBlock(byteBuff, 0, byteBuff.Length));
+            return plaintext;
+        }
+
+        public void SendEncriptedSecretKey(string key)
+        {
+            //throw new NotImplementedException();
+
+
+        }
+
+
+
+        public bool ValidateUser(string username, string password)
 		{
 			throw new NotImplementedException();
 		}
@@ -90,14 +122,14 @@ namespace DC
         public void SignOutService(string hostName)
         {
         	activeServices.Remove(hostName);
-            Console.WriteLine("Seris {0} is closed.", hostName);
+            Console.WriteLine("Servis {0} is closed.", hostName);
         }
 
         public void RegisterService(string IPAddr, string hostName, string port)
         {
         	activeServices.Add(hostName, new ServiceEntity(IPAddr, hostName, port));
             dnsTable.Add(IPAddr, hostName);
-            Console.WriteLine("Seris {0} is opened.",hostName);
+            Console.WriteLine("Servis {0} is opened.",hostName);
         }
 
     }

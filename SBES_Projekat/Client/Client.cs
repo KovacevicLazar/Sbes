@@ -6,6 +6,7 @@ using System.ServiceModel;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.Threading;
+using System.Security.Cryptography;
 
 namespace Client
 {
@@ -16,9 +17,8 @@ namespace Client
 			// Debugger.Launch();
 			//DESKTOP-IJMHSLM\Luka
 			WindowsIdentity id = WindowsIdentity.GetCurrent();
-			Console.WriteLine(id.Name);
+			//Console.WriteLine(id.Name);
            
-
 			NetTcpBinding binding = new NetTcpBinding();
 			binding.Security.Mode = SecurityMode.Transport;
 			binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
@@ -41,15 +41,18 @@ namespace Client
                 ///	Slanje ID klijenta, PASSWORD klijenta
 
                 string haspass = CreateSHA1("password");
-                Console.WriteLine(haspass);
                 serviceEndpointAndKey = authenticator.Connect(username, haspass, service);
-				/// TODO: dekriptovanje tajnog kljuca
-				/// secretKey = DecryptSecretKey(serviceEndpointAndKey);
-				while (serviceEndpointAndKey == null) System.Threading.Thread.Sleep(100);
+                /// TODO: dekriptovanje tajnog kljuca
+
+                string encriptSecretKey = serviceEndpointAndKey.Item2;
+                secretKey = Decript(encriptSecretKey, haspass);
+
+                Console.WriteLine("Klijent dobio tajni kljuc: " + secretKey);
+
+                serviceEndpointAndKey.Item2.Replace(serviceEndpointAndKey.Item2, secretKey);
+
+                while (serviceEndpointAndKey == null) System.Threading.Thread.Sleep(100);
 			}
-
-
-            
 
             ///	TODO: Komunikacija sa servisom
             using (WCFClient proxy = new WCFClient(binding, new EndpointAddress(new Uri(serviceEndpointAndKey.Item1))))
@@ -68,12 +71,44 @@ namespace Client
 				/// Create a signature using SHA1 hash algorithm
 				//byte[] signature1 = DigitalSignature.Create();
 				//proxy.SendMessage();
-				
-			
 
 			Console.ReadLine();
-		
 		}
+
+        public static string Decript(string input, string key)
+        {
+            byte[] byteKey = StringToByteArray(key);
+            byte[] buffer = new byte[4] { 0, 0, 0, 0 }; // za dodavanje 4 bajta koja nedostaju za 3des key.length
+
+            byte[] rv = new byte[byteKey.Length + buffer.Length];
+            System.Buffer.BlockCopy(byteKey, 0, rv, 0, byteKey.Length);
+            System.Buffer.BlockCopy(buffer, 0, rv, byteKey.Length, buffer.Length);
+
+            TripleDESCryptoServiceProvider tripleDesCrypto = new TripleDESCryptoServiceProvider
+            {
+                Key = rv,
+                Mode = CipherMode.CBC,
+                Padding = PaddingMode.None
+            };
+
+            byte[] byteBuff = Convert.FromBase64String(input);
+
+            string plaintext = Encoding.UTF8.GetString(tripleDesCrypto.CreateDecryptor().TransformFinalBlock(byteBuff, 0, byteBuff.Length));
+            return plaintext;
+        }
+
+        // Koncertovanje heksadecimalnog stringa u niz bajtova, dobijamo 20 bajtova
+        public static byte[] StringToByteArray(string hex)
+        {
+            return Enumerable.Range(0, hex.Length)
+                             .Where(x => x % 2 == 0)
+                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                             .ToArray();
+        }
+
+
+
+
         public static string CreateSHA1(string input)
         {
             // Use input string to calculate MD5 hash
@@ -87,11 +122,9 @@ namespace Client
                 StringBuilder sb = new StringBuilder();
                 for (i = 0; i < hashBytes.Length; i++)
                 {
-                    sb.Append(hashBytes[i].ToString("X2"));
+                    sb.Append(hashBytes[i].ToString("X2")); //x2 heksadecimalne vrednosti
                 }
-                //byte[] buffer = new byte[4] { 0, 0, 0, 0 };
-                //sb.Append(Encoding.UTF8.GetString(buffer));
-                Console.WriteLine(sb.ToString());
+                //Console.WriteLine(sb.ToString());
                 return sb.ToString();
             }
         }

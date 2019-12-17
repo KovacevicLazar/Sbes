@@ -14,13 +14,10 @@ namespace DC
     {
         //<ipAddr,hostName>
         private static Dictionary<string, string> dnsTable;
-
         //<hostName,ServiceID>
         private static Dictionary<string, ServiceEntity> activeServices;
 		// <client, secretKey>
 		private static Dictionary<string, string> createdSecretKeys;
-
-		
 
 
         public TicketGrantingService()
@@ -58,10 +55,8 @@ namespace DC
             //TripleDESCryptoServiceProvider.Create();                                                            // Ovako moramo praviti tajni kljuc jer cemo koristiti 3des pri komunikaciji izmedji klijenta i servera
             //return symmAlgorithm == null ? String.Empty : ASCIIEncoding.ASCII.GetString(symmAlgorithm.Key);      //
 
-
             var key = "b14ca5898a4e4133bbce2ea2315a1916";
             return key;
-
         }
 		
 		public bool ServiceExists(string serviceName)
@@ -74,24 +69,22 @@ namespace DC
             byte[] byteKey = StringToByteArray(key);
             byte[] buffer = new byte[4] { 0, 0, 0, 0 };
 
-            byte[] rv = new byte[byteKey.Length + buffer.Length];
-            System.Buffer.BlockCopy(byteKey, 0, rv, 0, byteKey.Length);
-            System.Buffer.BlockCopy(buffer, 0, rv, byteKey.Length, buffer.Length);
+            byte[] KeyFor3DES = new byte[byteKey.Length + buffer.Length];
+            System.Buffer.BlockCopy(byteKey, 0, KeyFor3DES, 0, byteKey.Length);
+            System.Buffer.BlockCopy(buffer, 0, KeyFor3DES, byteKey.Length, buffer.Length);
 
             TripleDESCryptoServiceProvider tripleDesCrypto = new TripleDESCryptoServiceProvider
             {
-                //Key = Encoding.ASCII.GetBytes(key),
-                Key = rv,
+                Key = KeyFor3DES,
                 Mode = CipherMode.CBC,
                 Padding = PaddingMode.None
             };
 
             byte[] rawInput = Encoding.UTF8.GetBytes(input);
-
-
             return Convert.ToBase64String(tripleDesCrypto.CreateEncryptor().TransformFinalBlock(rawInput, 0, rawInput.Length));
         }
 
+        // Convert the hexadecimal string to byte array
         public static byte[] StringToByteArray(string hex)
         {
             return Enumerable.Range(0, hex.Length)
@@ -100,31 +93,31 @@ namespace DC
                              .ToArray();
         }
 
+        //visak?=>
 
+        //public bool ValidateUser(string username, string password)
+        //{
+        //	throw new NotImplementedException();
+        //}
 
-        public bool ValidateUser(string username, string password)
-		{
-			throw new NotImplementedException();
-		}
+        //public Tuple<string, string> SendServiceRequest(string service, string username)
+        //{
+        //	throw new NotImplementedException();
+        //}
 
-		public Tuple<string, string> SendServiceRequest(string service, string username)
-		{
-			throw new NotImplementedException();
-		}
-
+        //<-visak?
 
         public void SignOutService(string hostName)
         {
         	activeServices.Remove(hostName);
-            Console.WriteLine("Servis {0} is closed.", hostName);
+            Console.WriteLine("Servis {0} is deactivated.", hostName);
         }
 
         public void RegisterService(string IPAddr, string hostName, string port, string hashPassword)
         {
         	activeServices.Add(hostName, new ServiceEntity(IPAddr, hostName, port, hashPassword));
             dnsTable.Add(IPAddr, hostName);
-            Console.WriteLine("Servis {0} is opened.",hostName);
+            Console.WriteLine("Servis {0} is activated.", hostName);
         }
-
     }
 }

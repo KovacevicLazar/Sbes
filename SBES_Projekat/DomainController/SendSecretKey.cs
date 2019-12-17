@@ -12,8 +12,7 @@ namespace DC
     {
         IServiceKeyHandler factory;
 
-        public SendSecretKey(NetTcpBinding binding, EndpointAddress address)
-            : base(binding, address)
+        public SendSecretKey(NetTcpBinding binding, EndpointAddress address) : base(binding, address)
         {
             factory = CreateChannel();
         }

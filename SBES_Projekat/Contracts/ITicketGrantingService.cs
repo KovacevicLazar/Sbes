@@ -16,11 +16,7 @@ namespace Contracts
         Tuple<string, string> GetServiceEndpointAndSecretKey(string serviceName, string hashedClientPassword);
         [OperationContract]
         string Encript(string input, string key);
-        [OperationContract]
-        string GenerateSecretKey();
         //[OperationContract]
-        //void RegisterService(string serviceName, string servicePassword, string port);
-        //[OperationContract]
-        //void SignOutService(string serviceName);
+        //string GenerateSecretKey();
 	}
 }

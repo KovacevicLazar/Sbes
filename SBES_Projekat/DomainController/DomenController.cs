@@ -28,11 +28,11 @@ namespace DC
 			return AS.Authenticate(username, password);
 		}
         /// <summary>
-        /// 
+        /// Vraca ime servisa i enkriptovan tajni kljuc
         /// </summary>
         /// <param name="service"></param>
         /// <param name="username"></param>
-        /// <returns>Ime servisa i hesovan tajni kljuc</returns>
+        /// <returns>Ime servisa i enkriptovan tajni kljuc</returns>
 		public Tuple<string, string> SendServiceRequest(string service, string username)
 		{
 			// TODO: provera greske

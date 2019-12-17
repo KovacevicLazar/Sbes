@@ -20,15 +20,15 @@ namespace Server
         public string Decript(string input, string key)
         {
             byte[] byteKey = StringToByteArray(key);
-            byte[] buffer = new byte[4] { 0, 0, 0, 0 };
+            byte[] buffer = new byte[4] { 0, 0, 0, 0 }; 
 
-            byte[] rv = new byte[byteKey.Length + buffer.Length];
-            System.Buffer.BlockCopy(byteKey, 0, rv, 0, byteKey.Length);
-            System.Buffer.BlockCopy(buffer, 0, rv, byteKey.Length, buffer.Length);
+            byte[] KeyFor3DES = new byte[byteKey.Length + buffer.Length];
+            System.Buffer.BlockCopy(byteKey, 0, KeyFor3DES, 0, byteKey.Length);
+            System.Buffer.BlockCopy(buffer, 0, KeyFor3DES, byteKey.Length, buffer.Length);
 
             TripleDESCryptoServiceProvider tripleDesCrypto = new TripleDESCryptoServiceProvider
             {
-                Key = rv,
+                Key = KeyFor3DES,
                 Mode = CipherMode.CBC,
                 Padding = PaddingMode.None
             };
@@ -39,6 +39,11 @@ namespace Server
             return plaintext;
         }
 
+        /// <summary>
+        /// Convert the hexadecimal string to byte array
+        /// </summary>
+        /// <param name="hex"></param>
+        /// <returns></returns>
         public static byte[] StringToByteArray(string hex)
         {
             return Enumerable.Range(0, hex.Length)
@@ -50,11 +55,11 @@ namespace Server
 
         public static string CreateSHA1(string input)
         {
-            // Use input string to calculate MD5 hash
-            using (System.Security.Cryptography.SHA1 md5 = System.Security.Cryptography.SHA1.Create())
+            // Use input string to calculate SHA1 hash
+            using (System.Security.Cryptography.SHA1 sha1 = System.Security.Cryptography.SHA1.Create())
             {
                 byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
-                byte[] hashBytes = md5.ComputeHash(inputBytes);
+                byte[] hashBytes = sha1.ComputeHash(inputBytes);
 
                 // Convert the byte array to hexadecimal string
                 int i;
@@ -63,9 +68,7 @@ namespace Server
                 {
                     sb.Append(hashBytes[i].ToString("X2"));
                 }
-                //byte[] buffer = new byte[4] { 0, 0, 0, 0 };
-                //sb.Append(Encoding.UTF8.GetString(buffer));
-                Console.WriteLine(sb.ToString());
+
                 return sb.ToString();
             }
         }

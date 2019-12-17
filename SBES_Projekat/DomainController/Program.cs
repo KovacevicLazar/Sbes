@@ -20,6 +20,7 @@ namespace DC
 			host.AddServiceEndpoint(typeof(IClientConnection), binding, address);
 
             host.Open();
+            Console.WriteLine("Domain controller host is opened.");
 
             //host za prijavu i odjavu servera->
 
@@ -32,7 +33,7 @@ namespace DC
             hostForServer.Open();
 
 
-            Console.WriteLine("Domain controller is opened. Press <enter> to finish...");
+            Console.WriteLine("ServiceConnection host is opened.");
 			Console.ReadLine();
 
 			host.Close();

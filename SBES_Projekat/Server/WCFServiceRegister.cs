@@ -30,11 +30,11 @@ namespace Server
             factory = CreateChannel();
         }
 
-        public void Registration(string IPAddr, string hostNane, string port)
+        public void Registration(string IPAddr, string hostNane, string port, string hashPassword)
         {
             try
             {
-                factory.RegisterService(IPAddr, hostNane, port);
+                factory.RegisterService(IPAddr, hostNane, port, hashPassword);
             }
             catch (Exception e)
             {

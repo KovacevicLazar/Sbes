@@ -11,7 +11,7 @@ namespace Contracts
 	public interface IServiceConnection
 	{
         [OperationContract]
-		void RegisterService(string IPAddr, string hostName, string port);
+		void RegisterService(string IPAddr, string hostName, string port, string hashPassword);
         [OperationContract]
 		void SignOutService(string hostName);
 	}

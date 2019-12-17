@@ -19,17 +19,6 @@ namespace Client
 			: base(binding, address)
 		{
 			factory = CreateChannel();
-			#region Rad sa sertifikatima
-			/// cltCertCN.SubjectName should be set to the client's username. .NET WindowsIdentity class provides information about Windows user running the given process
-			//string cltCertCN = Formatter.ParseName(WindowsIdentity.GetCurrent().Name);
-
-			//this.Credentials.ServiceCertificate.Authentication.CertificateValidationMode = System.ServiceModel.Security.X509CertificateValidationMode.Custom;
-			//this.Credentials.ServiceCertificate.Authentication.CustomCertificateValidator = new ClientCertValidator();
-			//this.Credentials.ServiceCertificate.Authentication.RevocationMode = X509RevocationMode.NoCheck;
-
-			///// Set appropriate client's certificate on the channel. Use CertManager class to obtain the certificate based on the "cltCertCN"
-			//this.Credentials.ClientCertificate.Certificate = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, cltCertCN);
-			#endregion
 		}
 		public Tuple<string, string> Connect(string username, string password, string service)
 		{
@@ -38,10 +27,18 @@ namespace Client
 				if (Authenticate(username, password))
 				{
 					Tuple<string, string> serviceEndpoint = factory.SendServiceRequest(service, username);
-
+                    if (serviceEndpoint == null )
+                    {
+                        Console.WriteLine("Trazeni servis nije aktivan.");
+                        return null;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Klijent konektovan na {serviceEndpoint.Item1}.");
+                    }
 
                     string encriptSecretKey = serviceEndpoint.Item2;
-                    string secretKey= Decript(encriptSecretKey, username);
+                    string secretKey = Decript(encriptSecretKey, username);
 
                     serviceEndpoint.Item2.Replace(serviceEndpoint.Item2, secretKey);
 

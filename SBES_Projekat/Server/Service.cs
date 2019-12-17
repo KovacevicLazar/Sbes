@@ -3,6 +3,7 @@ using System;
 using System.Security.Principal;
 using System.ServiceModel;
 using System.ServiceModel.Description;
+using System.Text;
 
 namespace Server
 {
@@ -36,8 +37,8 @@ namespace Server
 			/// Registrovanje servisa na TGS
             using (WCFServiceRegister proxy = new WCFServiceRegister(binding, new EndpointAddress(new Uri("net.tcp://localhost:9997/ServiceConnection"))))
             {
-                //EndpointAddress endpointAddress= new EndpointAddress(new Uri("net.tcp://localhost:9999/WCFService"), EndpointIdentity.CreateDnsIdentity("WCFService")); //DA LI OVDE PRAVIMO IDENTITI ILI NA TGS, AKO OVDE, KAKO GA POSLATI NA TGS
-                proxy.Registration(serviceIPAddr+clientPort, clientService, id.Name);
+                string hashPass = CreateSHA1("password");
+                proxy.Registration(serviceIPAddr+clientPort, clientService, id.Name , hashPass);
                                    // local host +port je IP adresa, tako su nam rekli na vezbama
             }
 
@@ -68,5 +69,27 @@ namespace Server
             clientHost.Close();
 			connectionHost.Close();
 		}
-	}
+
+        public static string CreateSHA1(string input)
+        {
+            // Use input string to calculate MD5 hash
+            using (System.Security.Cryptography.SHA1 md5 = System.Security.Cryptography.SHA1.Create())
+            {
+                byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+                byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+                // Convert the byte array to hexadecimal string
+                int i;
+                StringBuilder sb = new StringBuilder();
+                for (i = 0; i < hashBytes.Length; i++)
+                {
+                    sb.Append(hashBytes[i].ToString("X2"));
+                }
+                //byte[] buffer = new byte[4] { 0, 0, 0, 0 };
+                //sb.Append(Encoding.UTF8.GetString(buffer));
+                Console.WriteLine(sb.ToString());
+                return sb.ToString();
+            }
+        }
+    }
 }

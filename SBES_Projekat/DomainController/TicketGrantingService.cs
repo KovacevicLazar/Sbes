@@ -10,8 +10,8 @@ using Contracts;
 
 namespace DC
 {
-	public class TicketGrantingService : ChannelFactory<IServiceKeyHandler>, ITicketGrantingService
-	{
+	public class TicketGrantingService : ChannelFactory<IServiceKeyHandler>, ITicketGrantingService,  IServiceConnection
+    {
         //<ipAddr,hostName>
         private static Dictionary<string, string> dnsTable;
 
@@ -33,12 +33,12 @@ namespace DC
 		{
 			if (ServiceExists(serviceName))
 			{
-				string hostEndpoint = "net.tcp://localhost:" + activeServices[serviceName].port + "/" + activeServices[serviceName].serviceName;
+				string hostEndpoint = "net.tcp://localhost:" + activeServices[serviceName].port + "/" + activeServices[serviceName].hostName;
 				string secretKey = GenerateSecretKey();
 				string clientEncriptedSecretKey = Encript(secretKey, hashedClientPassword);
 				string serviceEncriptedSecretKey = Encript(secretKey, activeServices[serviceName].servicePassword);
 
-                string seckey = Decript(clientEncriptedSecretKey, hashedClientPassword); // nesto nije u redu
+               
 
 				//factory.SendEncriptedSecretKey(serviceEncriptedSecretKey);
 				return new Tuple<string, string>(hostEndpoint, clientEncriptedSecretKey);
@@ -52,6 +52,11 @@ namespace DC
 
 		public string GenerateSecretKey()
 		{
+            //SymmetricAlgorithm symmAlgorithm = null;                                                             //
+            //TripleDESCryptoServiceProvider.Create();                                                            // Ovako moramo praviti tajni kljuc jer cemo koristiti 3des pri komunikaciji izmedji klijenta i servera
+            //return symmAlgorithm == null ? String.Empty : ASCIIEncoding.ASCII.GetString(symmAlgorithm.Key);      //
+
+
             var key = "b14ca5898a4e4133bbce2ea2315a1916";
             return key;
 
@@ -64,49 +69,42 @@ namespace DC
 
 		public string Encript(string input, string key)
 		{
-            //TODO
-            TripleDESCryptoServiceProvider desCryptoProvider = new TripleDESCryptoServiceProvider();
-            MD5CryptoServiceProvider hashMD5Provider = new MD5CryptoServiceProvider();
+            byte[] byteKey = StringToByteArray(key);
+            byte[] buffer = new byte[4] { 0, 0, 0, 0 };
 
-            byte[] byteHash;
-            byte[] byteBuff;
+            byte[] rv = new byte[byteKey.Length + buffer.Length];
+            System.Buffer.BlockCopy(byteKey, 0, rv, 0, byteKey.Length);
+            System.Buffer.BlockCopy(buffer, 0, rv, byteKey.Length, buffer.Length);
 
-            byteHash = hashMD5Provider.ComputeHash(Encoding.UTF8.GetBytes(key));
-            desCryptoProvider.Key = byteHash;
-            desCryptoProvider.Mode = CipherMode.CBC; //ECB, CFB
-            byteBuff = Encoding.UTF8.GetBytes(input);
+            TripleDESCryptoServiceProvider tripleDesCrypto = new TripleDESCryptoServiceProvider
+            {
+                //Key = Encoding.ASCII.GetBytes(key),
+                Key = rv,
+                Mode = CipherMode.CBC,
+                Padding = PaddingMode.None
+            };
 
-            string encoded = Convert.ToBase64String(desCryptoProvider.CreateEncryptor().TransformFinalBlock(byteBuff, 0, byteBuff.Length));
-            return encoded;
+            byte[] rawInput = Encoding.UTF8.GetBytes(input);
+
+
+            return Convert.ToBase64String(tripleDesCrypto.CreateEncryptor().TransformFinalBlock(rawInput, 0, rawInput.Length));
         }
 
-		public string Decript(string input, string key)
-		{
-            //TODO
-
-            TripleDESCryptoServiceProvider desCryptoProvider = new TripleDESCryptoServiceProvider();
-            MD5CryptoServiceProvider hashMD5Provider = new MD5CryptoServiceProvider();
-
-            byte[] byteHash;
-            byte[] byteBuff;
-
-            byteHash = hashMD5Provider.ComputeHash(Encoding.UTF8.GetBytes(key));
-            desCryptoProvider.Key = byteHash;
-            desCryptoProvider.Mode = CipherMode.CBC; //ECB, CFB
-            byteBuff = Convert.FromBase64String(input);
-
-            string plaintext = Encoding.UTF8.GetString(desCryptoProvider.CreateDecryptor().TransformFinalBlock(byteBuff, 0, byteBuff.Length));
-            return plaintext;
+        public static byte[] StringToByteArray(string hex)
+        {
+            return Enumerable.Range(0, hex.Length)
+                             .Where(x => x % 2 == 0)
+                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                             .ToArray();
         }
+
 
         public void SendEncriptedSecretKey(string key)
         {
-            //throw new NotImplementedException();
+            throw new NotImplementedException();
 
 
         }
-
-
 
         public bool ValidateUser(string username, string password)
 		{
@@ -125,9 +123,9 @@ namespace DC
             Console.WriteLine("Servis {0} is closed.", hostName);
         }
 
-        public void RegisterService(string IPAddr, string hostName, string port)
+        public void RegisterService(string IPAddr, string hostName, string port, string hashPassword)
         {
-        	activeServices.Add(hostName, new ServiceEntity(IPAddr, hostName, port));
+        	activeServices.Add(hostName, new ServiceEntity(IPAddr, hostName, port, hashPassword));
             dnsTable.Add(IPAddr, hostName);
             Console.WriteLine("Servis {0} is opened.",hostName);
         }

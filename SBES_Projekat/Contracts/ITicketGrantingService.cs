@@ -17,8 +17,6 @@ namespace Contracts
         [OperationContract]
         string Encript(string input, string key);
         [OperationContract]
-        string Decript(string input, string key);
-        [OperationContract]
         string GenerateSecretKey();
         //[OperationContract]
         //void RegisterService(string serviceName, string servicePassword, string port);

@@ -4,15 +4,17 @@ namespace DC
 {
 	internal class ServiceEntity
 	{
-		public string serviceName;
-		public string servicePassword;
+		public string ipAddress;
+		public string hostName;
 		public string port;
+        public string servicePassword;
 
-		public ServiceEntity(string serviceName, string servicePassword, string port)
+        public ServiceEntity(string ipAddress, string hostName, string port, string servicePassword)
 		{
-			this.serviceName = serviceName ?? throw new ArgumentNullException(nameof(serviceName));
-			this.servicePassword = servicePassword ?? throw new ArgumentNullException(nameof(servicePassword));
+			this.ipAddress = ipAddress ?? throw new ArgumentNullException(nameof(ipAddress));
+			this.hostName = hostName ?? throw new ArgumentNullException(nameof(hostName));
 			this.port = port ?? throw new ArgumentNullException(nameof(port));
-		}
+            this.servicePassword=servicePassword ?? throw new ArgumentNullException(nameof(servicePassword));
+        }
 	}
 }

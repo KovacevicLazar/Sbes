@@ -12,27 +12,62 @@ namespace Server
     {
         public void SendEncriptedSecretKey(string key)
         {
-            SecretKey.secretKey = Decript(key, "WCFService");
+            string haspass = CreateSHA1("password");
+            SecretKey.secretKey = Decript(key, haspass);
         }
 
 
         public string Decript(string input, string key)
         {
-            //TODO
+            byte[] byteKey = StringToByteArray(key);
+            byte[] buffer = new byte[4] { 0, 0, 0, 0 };
 
-            TripleDESCryptoServiceProvider desCryptoProvider = new TripleDESCryptoServiceProvider();
-            MD5CryptoServiceProvider hashMD5Provider = new MD5CryptoServiceProvider();
+            byte[] rv = new byte[byteKey.Length + buffer.Length];
+            System.Buffer.BlockCopy(byteKey, 0, rv, 0, byteKey.Length);
+            System.Buffer.BlockCopy(buffer, 0, rv, byteKey.Length, buffer.Length);
 
-            byte[] byteHash;
-            byte[] byteBuff;
+            TripleDESCryptoServiceProvider tripleDesCrypto = new TripleDESCryptoServiceProvider
+            {
+                Key = rv,
+                Mode = CipherMode.CBC,
+                Padding = PaddingMode.None
+            };
 
-            byteHash = hashMD5Provider.ComputeHash(Encoding.UTF8.GetBytes(key));
-            desCryptoProvider.Key = byteHash;
-            desCryptoProvider.Mode = CipherMode.CBC; //ECB, CFB
-            byteBuff = Convert.FromBase64String(input);
+            byte[] byteBuff = Convert.FromBase64String(input);
 
-            string plaintext = Encoding.UTF8.GetString(desCryptoProvider.CreateDecryptor().TransformFinalBlock(byteBuff, 0, byteBuff.Length));
+            string plaintext = Encoding.UTF8.GetString(tripleDesCrypto.CreateDecryptor().TransformFinalBlock(byteBuff, 0, byteBuff.Length));
             return plaintext;
+        }
+
+        public static byte[] StringToByteArray(string hex)
+        {
+            return Enumerable.Range(0, hex.Length)
+                             .Where(x => x % 2 == 0)
+                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                             .ToArray();
+        }
+
+
+        public static string CreateSHA1(string input)
+        {
+            // Use input string to calculate MD5 hash
+            using (System.Security.Cryptography.SHA1 md5 = System.Security.Cryptography.SHA1.Create())
+            {
+                byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+                byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+                // Convert the byte array to hexadecimal string
+                int i;
+                StringBuilder sb = new StringBuilder();
+                for (i = 0; i < hashBytes.Length; i++)
+                {
+                    sb.Append(hashBytes[i].ToString("X2"));
+                }
+                //byte[] buffer = new byte[4] { 0, 0, 0, 0 };
+                //sb.Append(Encoding.UTF8.GetString(buffer));
+                Console.WriteLine(sb.ToString());
+                return sb.ToString();
+            }
         }
     }
 }

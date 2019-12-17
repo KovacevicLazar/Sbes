@@ -10,7 +10,7 @@ using Contracts;
 
 namespace DC
 {
-	public class TicketGrantingService : ChannelFactory<IServiceKeyHandler>, ITicketGrantingService,  IServiceConnection
+	public class TicketGrantingService : ITicketGrantingService,  IServiceConnection
     {
         //<ipAddr,hostName>
         private static Dictionary<string, string> dnsTable;
@@ -20,9 +20,10 @@ namespace DC
 		// <client, secretKey>
 		private static Dictionary<string, string> createdSecretKeys;
 
-		IServiceKeyHandler factory;
+		
 
-		public TicketGrantingService()
+
+        public TicketGrantingService()
 		{
 			if (activeServices == null) activeServices = new Dictionary<string, ServiceEntity>();
 			if (createdSecretKeys == null) createdSecretKeys = new Dictionary<string, string>();
@@ -38,9 +39,10 @@ namespace DC
 				string clientEncriptedSecretKey = Encript(secretKey, hashedClientPassword);
 				string serviceEncriptedSecretKey = Encript(secretKey, activeServices[serviceName].servicePassword);
 
-               
-
-				//factory.SendEncriptedSecretKey(serviceEncriptedSecretKey);
+                using (SendSecretKey proxy= new SendSecretKey(new NetTcpBinding(), new EndpointAddress(new Uri("net.tcp://localhost:9990/Connector"))))
+                {
+                    proxy.SendEncriptedSecretKey(serviceEncriptedSecretKey);
+                }
 				return new Tuple<string, string>(hostEndpoint, clientEncriptedSecretKey);
 			}
 			else
@@ -99,12 +101,6 @@ namespace DC
         }
 
 
-        public void SendEncriptedSecretKey(string key)
-        {
-            throw new NotImplementedException();
-
-
-        }
 
         public bool ValidateUser(string username, string password)
 		{

@@ -37,8 +37,8 @@ namespace Server
 			/// Registrovanje servisa na TGS
             using (WCFServiceRegister proxy = new WCFServiceRegister(binding, new EndpointAddress(new Uri("net.tcp://localhost:9997/ServiceConnection"))))
             {
-                string hashPass = CreateSHA1("password");
-                proxy.Registration(serviceIPAddr+clientPort, clientService, id.Name , hashPass);
+                string hashPass = CreateSHA1("password"); 
+                proxy.Registration(serviceIPAddr+clientPort, clientService, clientPort , hashPass);
                                    // local host +port je IP adresa, tako su nam rekli na vezbama
             }
 

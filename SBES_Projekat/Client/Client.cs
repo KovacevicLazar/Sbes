@@ -47,7 +47,7 @@ namespace Client
 
                 string encriptSecretKey = serviceEndpointAndKey.Item2;
                 secretKey =  Decript(encriptSecretKey, haspass);
-
+               
                 Console.WriteLine("Klijent dobio tajni kljuc: " + secretKey);
 
                 serviceEndpointAndKey.Item2.Replace(serviceEndpointAndKey.Item2, secretKey);
@@ -58,7 +58,7 @@ namespace Client
             ///	TODO: Komunikacija sa servisom
             using (WCFClient proxy = new WCFClient(binding, new EndpointAddress(new Uri(serviceEndpointAndKey.Item1))))
             {
-                if (proxy.Write("msgdadsadasasasdasasdas  dsada", secretKey))
+                if (proxy.Write("msgdadsadasasasdasasdassssss dsad", secretKey))
                 {
                     Console.WriteLine("Poruka je uspesno poslata. ");
                 }
@@ -84,6 +84,7 @@ namespace Client
 
         public static string Decript(string input, string key)
         {
+            
             byte[] byteBuff = Convert.FromBase64String(input); //od umaznog stringa pravimo niz bajta
             byte[] decrypted; //pomocni niz u koji se dekriptuje
 

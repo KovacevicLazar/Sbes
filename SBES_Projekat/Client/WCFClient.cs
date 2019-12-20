@@ -28,6 +28,7 @@ namespace Client
 				///TODO: enkripcija poruke pre slanja
 				string encriptedMessage = Encrypt(message, key);
                 ret=factory.Write(encriptedMessage);
+                Console.WriteLine("ENKRIPTOVANA PORUKA POSLATA SERVERU:   "+encriptedMessage);
 			}
 			catch (Exception e)
 			{
@@ -43,7 +44,9 @@ namespace Client
             try
             {
                 string decriptedMessage = factory.Read();
+                Console.WriteLine("ENKRIPTOVANA Pprimljena sa servera:   " + decriptedMessage);
                 ret = Decript(decriptedMessage, key);
+                Console.WriteLine("Dekriptovana poruka sa servera" + ret);
             }
             catch (Exception e)
             {
@@ -67,10 +70,16 @@ namespace Client
 
         public static string Decript(string input, string key)
         {
-            byte[] byteBuff = Encoding.Unicode.GetBytes(input); //od umaznog stringa pravimo niz bajta
+            while (input.Length % 8 != 0)    //kriptuje samo do velicine deljuve sa 8 ostatak odbaci, zbog toga ova petlja
+            {
+                input = input + " ";
+            }
+
+            byte[] byteBuff = Convert.FromBase64String(input); //od umaznog stringa pravimo niz bajta
             byte[] decrypted; //pomocni niz u koji se dekriptuje
-            
-            byte[] KeyFor3DES= Encoding.UTF8.GetBytes(key);
+
+            //Pravimo Kljuc za 3DES
+            byte[] KeyFor3DES = ASCIIEncoding.ASCII.GetBytes(key);
 
             TripleDESCryptoServiceProvider tripleDesCrypto = new TripleDESCryptoServiceProvider
             {
@@ -79,14 +88,14 @@ namespace Client
                 Padding = PaddingMode.None
             };
 
-            tripleDesCrypto.IV = byteBuff.Take(tripleDesCrypto.BlockSize/8 ).ToArray();               // take the iv off the beginning of the ciphertext message			
+            tripleDesCrypto.IV = byteBuff.Take(tripleDesCrypto.BlockSize / 8).ToArray();               // take the iv off the beginning of the ciphertext message			
             ICryptoTransform tripleDesDecrypt = tripleDesCrypto.CreateDecryptor();
 
-            using (MemoryStream mStream = new MemoryStream(byteBuff.Skip(tripleDesCrypto.BlockSize/8).ToArray()))
+            using (MemoryStream mStream = new MemoryStream(byteBuff.Skip(tripleDesCrypto.BlockSize / 8).ToArray()))
             {
                 using (CryptoStream cryptoStream = new CryptoStream(mStream, tripleDesDecrypt, CryptoStreamMode.Read))
                 {
-                    decrypted = new byte[byteBuff.Length - tripleDesCrypto.BlockSize / 8];
+                    decrypted = new byte[byteBuff.Length - tripleDesCrypto.BlockSize/8];
                     cryptoStream.Read(decrypted, 0, decrypted.Length);
                 }
             }
@@ -97,12 +106,17 @@ namespace Client
 
         public string Encrypt(string input, string key)
         {
+            while (input.Length % 8 != 0)    //kriptuje samo do velicine deljuve sa 8 ostatak odbaci, zbog toga ova petlja
+            {
+                input = input + " ";
+            }
             byte[] rawInput = Encoding.UTF8.GetBytes(input); //pravimo niz bajtova od unetog stringa
             byte[] encrypted; //pomocni niz u koga enkriptujemo
 
-            byte[] KeyFor3DES = Encoding.UTF8.GetBytes(key);
+            //pravimo kljuc za 3DES
 
-             TripleDESCryptoServiceProvider tripleDesCrypto = new TripleDESCryptoServiceProvider
+            byte[] KeyFor3DES = ASCIIEncoding.ASCII.GetBytes(key);
+            TripleDESCryptoServiceProvider tripleDesCrypto = new TripleDESCryptoServiceProvider
             {
                 Key = KeyFor3DES,
                 Mode = CipherMode.CBC,
@@ -121,20 +135,8 @@ namespace Client
                     encrypted = tripleDesCrypto.IV.Concat(mStream.ToArray()).ToArray();
                 }
             }
-            return Encoding.UTF8.GetString(encrypted);
+            return Convert.ToBase64String(encrypted);
         }
 
-
-        //public void TestCommunication()
-        //{
-        //	try
-        //	{
-        //		factory.TestCommunication();
-        //	}
-        //	catch (Exception e)
-        //	{
-        //		Console.WriteLine("[TestCommunication] ERROR = {0}", e.Message);
-        //	}
-        //}
     }
 }

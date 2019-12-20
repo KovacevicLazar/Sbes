@@ -39,24 +39,32 @@ namespace Server
             }
             else
             {
-                return primljenePoruke[primljenePoruke.Count-1];
+                string posljednjaPorukaIzListe = primljenePoruke[primljenePoruke.Count - 1];
+                return Encrypt(posljednjaPorukaIzListe,SecretKey.secretKey);
             }
         }
 
         public bool Write(string text)
         {
+            text = Decript(text, SecretKey.secretKey);
             primljenePoruke.Add(text);
-            Console.WriteLine("Klijent poslao: "+Decript( text, SecretKey.secretKey));
+            Console.WriteLine("Klijent poslao: "+text);
             return true;
         }
 
 
         public static string Decript(string input, string key)
         {
-            byte[] byteBuff = Encoding.Unicode.GetBytes(input); //od umaznog stringa pravimo niz bajta
+            //while (input.Length % 8 != 0)    //kriptuje samo do velicine deljuve sa 8 ostatak odbaci, zbog toga ova petlja
+            //{
+            //    input = input + " ";
+            //}
+
+            byte[] byteBuff = Convert.FromBase64String(input); //od umaznog stringa pravimo niz bajta
             byte[] decrypted; //pomocni niz u koji se dekriptuje
 
-            byte[] KeyFor3DES = Encoding.UTF8.GetBytes(key);
+            //Pravimo Kljuc za 3DES
+            byte[] KeyFor3DES = ASCIIEncoding.ASCII.GetBytes(key);
 
             TripleDESCryptoServiceProvider tripleDesCrypto = new TripleDESCryptoServiceProvider
             {
@@ -81,16 +89,23 @@ namespace Server
         }
 
 
-        public string Encript(string input, string key)
+        public string Encrypt(string input, string key)
         {
+            //while (input.Length % 8 != 0)    //kriptuje samo do velicine deljuve sa 8 ostatak odbaci, zbog toga ova petlja
+            //{
+            //    input = input + " ";
+            //}
             byte[] rawInput = Encoding.UTF8.GetBytes(input); //pravimo niz bajtova od unetog stringa
             byte[] encrypted; //pomocni niz u koga enkriptujemo
 
+            //pravimo kljuc za 3DES
+
+            byte[] KeyFor3DES = ASCIIEncoding.ASCII.GetBytes(key);
             TripleDESCryptoServiceProvider tripleDesCrypto = new TripleDESCryptoServiceProvider
             {
-                Key = ASCIIEncoding.ASCII.GetBytes(key),
+                Key = KeyFor3DES,
                 Mode = CipherMode.CBC,
-                Padding = PaddingMode.None
+                Padding = PaddingMode.Zeros
             };
 
             //Mora sa ovim algoritmom, sa starim radi samo u  ECB modu

@@ -53,7 +53,6 @@ namespace Server
 
 			Console.WriteLine("Client connected with secret key: " + SecretKey.secretKey);
 
-
             Console.WriteLine("Press <enter> to finish...");
 			Console.ReadLine();
 

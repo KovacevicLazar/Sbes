@@ -32,7 +32,6 @@ namespace Client
 			string authenticationPort = "9998";
 			string authenticationService = "DomenController";
 			string service = "WCFService";
-
 			Tuple<string, string> serviceEndpointAndKey;
 			string secretKey = null;
 
@@ -44,11 +43,11 @@ namespace Client
                 string haspass = CreateSHA1("password");
                 serviceEndpointAndKey = authenticator.Connect(username, haspass, service);
                 /// TODO: dekriptovanje tajnog kljuca
-
+                
                 string encriptSecretKey = serviceEndpointAndKey.Item2;
                 secretKey =  Decript(encriptSecretKey, haspass);
                
-                Console.WriteLine("Klijent dobio tajni kljuc: " + secretKey);
+                Console.WriteLine("Trazeni servis je aktivan!\nKlijent dobio tajni kljuc: " + secretKey);
 
                 serviceEndpointAndKey.Item2.Replace(serviceEndpointAndKey.Item2, secretKey);
 
@@ -58,12 +57,58 @@ namespace Client
             ///	TODO: Komunikacija sa servisom
             using (WCFClient proxy = new WCFClient(binding, new EndpointAddress(new Uri(serviceEndpointAndKey.Item1))))
             {
-                if (proxy.Write("msgdadsadasasasdasasdassssss dsad", secretKey))
+                char izbor;
+                string message = "";
+                bool close=false;
+                while (!close)
                 {
-                    Console.WriteLine("Poruka je uspesno poslata. ");
+                    message = "";
+                    Console.WriteLine();
+                    Console.WriteLine("------Izaberi------");
+                    Console.WriteLine("1 -> Slanje poruke (Write)");
+                    Console.WriteLine("2 -> Prijem poruke (Read)");
+                    Console.WriteLine("3 -> Zatvaranje komunikacije");
+                    Console.WriteLine("Unesi:");
+                    izbor = Console.ReadKey().KeyChar;
+                    Console.WriteLine();
+                    switch (izbor)
+                    {
+                        case '1':
+                            Console.WriteLine("Unesi poruku za slanje:");
+                            message = Console.ReadLine();
+                            Console.WriteLine();
+                            if (!message.Trim().Equals(""))
+                            {
+                                if (proxy.Write(message, secretKey))
+                                {
+                                    Console.WriteLine("Poruka je uspesno poslata. ");
+                                }
+                            }
+                            else
+                                Console.WriteLine("Poruka za slanje nije uneta");
+                            break;
+                        case '2':
+                            Console.WriteLine();
+                            string primljenaPoruka = proxy.Read(secretKey);
+                            if (primljenaPoruka.Trim().Equals(""))
+                            {
+                                Console.WriteLine("Nema podataka na serveru");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Server Poslao: " + primljenaPoruka);
+                            }
+                            break;
+                        case '3':
+                            close = true;
+                            break;
+                        default:
+                            Console.WriteLine("Pogresan unos");
+                            break;
+
+                    }
+
                 }
-                string primljenaPoruka = proxy.Read(secretKey);
-                Console.WriteLine("Server Poslao: "+primljenaPoruka);
      
             }
 				/// Create a signature using SHA1 hash algorithm
@@ -125,9 +170,6 @@ namespace Client
                              .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
                              .ToArray();
         }
-
-
-
 
         public static string CreateSHA1(string input)
         {

@@ -52,12 +52,10 @@ namespace DC
 
 		public string GenerateSecretKey()
 		{
-            SymmetricAlgorithm symmAlgorithm = null;                                                             //
-            symmAlgorithm = TripleDESCryptoServiceProvider.Create();                                              // Ovako moramo praviti tajni kljuc jer cemo koristiti 3des pri komunikaciji izmedji klijenta i servera
-            return symmAlgorithm == null ? String.Empty : ASCIIEncoding.ASCII.GetString(symmAlgorithm.Key);      //
-
-            //var key = "8a4e4133bbce2ea2315a1916";
-            //return key;
+            // Ovako moramo praviti tajni kljuc jer cemo koristiti 3des pri komunikaciji izmedji klijenta i servera
+            SymmetricAlgorithm symmAlgorithm = null;                                                             
+            symmAlgorithm = TripleDESCryptoServiceProvider.Create();                                             
+            return symmAlgorithm == null ? String.Empty : ASCIIEncoding.ASCII.GetString(symmAlgorithm.Key);      
         }
 
         public bool ServiceExists(string serviceName)
@@ -107,20 +105,6 @@ namespace DC
                              .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
                              .ToArray();
         }
-
-        //visak?=>
-
-        //public bool ValidateUser(string username, string password)
-        //{
-        //	throw new NotImplementedException();
-        //}
-
-        //public Tuple<string, string> SendServiceRequest(string service, string username)
-        //{
-        //	throw new NotImplementedException();
-        //}
-
-        //<-visak?
 
         public void SignOutService(string hostName)
         {

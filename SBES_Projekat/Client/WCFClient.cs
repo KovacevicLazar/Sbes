@@ -28,8 +28,8 @@ namespace Client
 				///TODO: enkripcija poruke pre slanja
 				string encriptedMessage = Encrypt(message, key);
                 ret=factory.Write(encriptedMessage);
-                Console.WriteLine("ENKRIPTOVANA PORUKA POSLATA SERVERU:   "+encriptedMessage);
-			}
+                Console.WriteLine("Poruka za slanje: {0}, Enkriptovana: {1}", message,encriptedMessage);
+            }
 			catch (Exception e)
 			{
 				Console.WriteLine("[Write] ERROR = {0}", e.Message);
@@ -43,10 +43,10 @@ namespace Client
             string ret;
             try
             {
-                string decriptedMessage = factory.Read();
-                Console.WriteLine("ENKRIPTOVANA Pprimljena sa servera:   " + decriptedMessage);
-                ret = Decript(decriptedMessage, key);
-                Console.WriteLine("Dekriptovana poruka sa servera" + ret);
+                string encriptedMessage = factory.Read();
+                
+                ret = Decript(encriptedMessage, key);
+                Console.WriteLine("Poruka primljena sa servera: {0}, Dekriptovana: {1}",encriptedMessage,ret);
             }
             catch (Exception e)
             {

@@ -52,11 +52,8 @@ namespace Server
             return plaintext;
         }
 
-        /// <summary>
+        
         /// Convert the hexadecimal string to byte array
-        /// </summary>
-        /// <param name="hex"></param>
-        /// <returns></returns>
         public static byte[] StringToByteArray(string hex)
         {
             return Enumerable.Range(0, hex.Length)

@@ -35,7 +35,7 @@ namespace Server
         {
             if (primljenePoruke.Count == 0)
             {
-                return "dasdasdasdasdasdasd";
+                return "";
             }
             else
             {
@@ -46,9 +46,9 @@ namespace Server
 
         public bool Write(string text)
         {
-            text = Decript(text, SecretKey.secretKey);
-            primljenePoruke.Add(text);
-            Console.WriteLine("Klijent poslao: "+text);
+            string decriptText = Decript(text, SecretKey.secretKey);
+            primljenePoruke.Add(decriptText);
+            Console.WriteLine("Klijent poslao: {0}, Dekriptovano: {1}",text,decriptText);
             return true;
         }
 
@@ -99,16 +99,14 @@ namespace Server
             byte[] encrypted; //pomocni niz u koga enkriptujemo
 
             //pravimo kljuc za 3DES
-
             byte[] KeyFor3DES = ASCIIEncoding.ASCII.GetBytes(key);
+
             TripleDESCryptoServiceProvider tripleDesCrypto = new TripleDESCryptoServiceProvider
             {
                 Key = KeyFor3DES,
                 Mode = CipherMode.CBC,
                 Padding = PaddingMode.Zeros
             };
-
-            //Mora sa ovim algoritmom, sa starim radi samo u  ECB modu
             tripleDesCrypto.GenerateIV();
             ICryptoTransform tripleDesEncrypt = tripleDesCrypto.CreateEncryptor();
 
@@ -122,7 +120,5 @@ namespace Server
             }
             return Convert.ToBase64String(encrypted);
         }
-
-
     }
 }

@@ -14,8 +14,8 @@ namespace Contracts
 		bool ServiceExists(string serviceName);
         [OperationContract]
         Tuple<string, string> GetServiceEndpointAndSecretKey(string serviceName, string hashedClientPassword);
-        [OperationContract]
-        string Encript(string input, string key);
+        //[OperationContract]
+       // string Encript(string input, string key);
         //[OperationContract]
         //string GenerateSecretKey();
 	}

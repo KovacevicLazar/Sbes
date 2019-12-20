@@ -114,7 +114,8 @@ namespace DC
 
         public void RegisterService(string IPAddr, string hostName, string port, string hashPassword)
         {
-        	activeServices.Add(hostName, new ServiceEntity(IPAddr, hostName, port, hashPassword));
+            EndpointAddress endpointAdress = new EndpointAddress(new Uri("net.tcp://localhost:" + port +  "/" + hostName), EndpointIdentity.CreateUpnIdentity("admin@w7ent"));
+            activeServices.Add(hostName, new ServiceEntity(IPAddr, hostName, port, hashPassword,endpointAdress.Identity));
             dnsTable.Add(IPAddr, hostName);
             Console.WriteLine("Servis {0} is activated.", hostName);
         }

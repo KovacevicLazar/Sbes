@@ -49,7 +49,6 @@
     <Compile Include="SecretKey.cs" />
     <Compile Include="Service.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceDataManagement.cs" />
     <Compile Include="WCFService.cs" />
     <Compile Include="WCFServiceRegister.cs" />
   </ItemGroup>

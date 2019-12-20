@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.ServiceModel;
@@ -51,24 +52,27 @@ namespace DC
 
 		public string GenerateSecretKey()
 		{
-            //SymmetricAlgorithm symmAlgorithm = null;                                                             //
-            //TripleDESCryptoServiceProvider.Create();                                                            // Ovako moramo praviti tajni kljuc jer cemo koristiti 3des pri komunikaciji izmedji klijenta i servera
-            //return symmAlgorithm == null ? String.Empty : ASCIIEncoding.ASCII.GetString(symmAlgorithm.Key);      //
+            SymmetricAlgorithm symmAlgorithm = null;                                                             //
+            symmAlgorithm = TripleDESCryptoServiceProvider.Create();                                              // Ovako moramo praviti tajni kljuc jer cemo koristiti 3des pri komunikaciji izmedji klijenta i servera
+            return symmAlgorithm == null ? String.Empty : ASCIIEncoding.ASCII.GetString(symmAlgorithm.Key);      //
 
-            var key = "b14ca5898a4e4133bbce2ea2315a1916";
-            return key;
+            //var key = "8a4e4133bbce2ea2315a1916";
+            //return key;
         }
-		
-		public bool ServiceExists(string serviceName)
+
+        public bool ServiceExists(string serviceName)
 		{
 			return activeServices.ContainsKey(serviceName);
 		}
 
 		public string Encript(string input, string key)
 		{
+            byte[] rawInput = Encoding.UTF8.GetBytes(input); //pravimo niz bajtova od unetog stringa
+            byte[] encrypted; //pomocni niz u koga enkriptujemo
+
+            //pravimo kljuc za 3DES
             byte[] byteKey = StringToByteArray(key);
             byte[] buffer = new byte[4] { 0, 0, 0, 0 };
-
             byte[] KeyFor3DES = new byte[byteKey.Length + buffer.Length];
             System.Buffer.BlockCopy(byteKey, 0, KeyFor3DES, 0, byteKey.Length);
             System.Buffer.BlockCopy(buffer, 0, KeyFor3DES, byteKey.Length, buffer.Length);
@@ -80,8 +84,19 @@ namespace DC
                 Padding = PaddingMode.None
             };
 
-            byte[] rawInput = Encoding.UTF8.GetBytes(input);
-            return Convert.ToBase64String(tripleDesCrypto.CreateEncryptor().TransformFinalBlock(rawInput, 0, rawInput.Length));
+            //Mora sa ovim algoritmom, sa starim radi samo u  ECB modu
+            tripleDesCrypto.GenerateIV();
+            ICryptoTransform tripleDesEncrypt = tripleDesCrypto.CreateEncryptor();
+
+            using (MemoryStream mStream = new MemoryStream())
+            {
+                using (CryptoStream cryptoStream = new CryptoStream(mStream, tripleDesEncrypt, CryptoStreamMode.Write))
+                {
+                    cryptoStream.Write(rawInput, 0, rawInput.Length);
+                    encrypted = tripleDesCrypto.IV.Concat(mStream.ToArray()).ToArray();
+                }
+            }
+            return Convert.ToBase64String(encrypted);
         }
 
         // Convert the hexadecimal string to byte array

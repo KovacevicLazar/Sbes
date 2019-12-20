@@ -14,5 +14,11 @@ namespace Contracts
 		void TestCommunication();
 		[OperationContract]
 		void SendMessage(string message);
-	}
+
+        [OperationContract]
+        string Read();
+        [OperationContract]
+        bool Write(string text);
+    }
 }
+

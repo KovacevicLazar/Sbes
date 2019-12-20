@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -19,9 +20,12 @@ namespace Server
 
         public string Decript(string input, string key)
         {
+            byte[] byteBuff = Convert.FromBase64String(input); //od umaznog stringa pravimo niz bajta
+            byte[] decrypted; //pomocni niz u koji se dekriptuje
+
+            //Pravimo Kljuc za 3DES
             byte[] byteKey = StringToByteArray(key);
             byte[] buffer = new byte[4] { 0, 0, 0, 0 }; 
-
             byte[] KeyFor3DES = new byte[byteKey.Length + buffer.Length];
             System.Buffer.BlockCopy(byteKey, 0, KeyFor3DES, 0, byteKey.Length);
             System.Buffer.BlockCopy(buffer, 0, KeyFor3DES, byteKey.Length, buffer.Length);
@@ -33,9 +37,18 @@ namespace Server
                 Padding = PaddingMode.None
             };
 
-            byte[] byteBuff = Convert.FromBase64String(input);
+            tripleDesCrypto.IV = byteBuff.Take(tripleDesCrypto.BlockSize / 8).ToArray();                // take the iv off the beginning of the ciphertext message			
+            ICryptoTransform tripleDesDecrypt = tripleDesCrypto.CreateDecryptor();
 
-            string plaintext = Encoding.UTF8.GetString(tripleDesCrypto.CreateDecryptor().TransformFinalBlock(byteBuff, 0, byteBuff.Length));
+            using (MemoryStream mStream = new MemoryStream(byteBuff.Skip(tripleDesCrypto.BlockSize / 8).ToArray()))
+            {
+                using (CryptoStream cryptoStream = new CryptoStream(mStream, tripleDesDecrypt, CryptoStreamMode.Read))
+                {
+                    decrypted = new byte[byteBuff.Length - tripleDesCrypto.BlockSize / 8];     
+                    cryptoStream.Read(decrypted, 0, decrypted.Length);
+                }
+            }
+            string plaintext = Encoding.UTF8.GetString(decrypted);
             return plaintext;
         }
 

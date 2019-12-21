@@ -31,7 +31,8 @@ namespace Server
             }
             else
             {
-                string posljednjaPorukaIzListe = primljenePoruke[primljenePoruke.Count - 1];
+                string posljednjaPorukaIzListe = primljenePoruke[0];
+				primljenePoruke.RemoveAt(0);
                 return Encrypt(posljednjaPorukaIzListe,SecretKey.secretKey);
             }
         }

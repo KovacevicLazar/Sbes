@@ -48,7 +48,7 @@ namespace Client
 				///TODO: enkripcija poruke pre slanja
 				string encriptedMessage = Encrypt(message, key);
                 ret=factory.Write(encriptedMessage);
-                Console.WriteLine("Poruka za slanje: {0}, Enkriptovana: {1}", message,encriptedMessage);
+                //Console.WriteLine("Poruka za slanje: {0}, Enkriptovana: {1}", message,encriptedMessage);
             }
 			catch (Exception e)
 			{
@@ -66,7 +66,7 @@ namespace Client
                 string encriptedMessage = factory.Read();
                 
                 ret = Decript(encriptedMessage, key);
-                Console.WriteLine("Poruka primljena sa servera: {0}, Dekriptovana: {1}",encriptedMessage,ret);
+                //if(ret != "") Console.WriteLine("Poruka primljena sa servera: {0}, Dekriptovana: {1}",encriptedMessage,ret);
             }
             catch (Exception e)
             {
@@ -90,11 +90,6 @@ namespace Client
 
         public static string Decript(string input, string key)
         {
-            while (input.Length % 8 != 0)    //kriptuje samo do velicine deljuve sa 8 ostatak odbaci, zbog toga ova petlja
-            {
-                input = input + " ";
-            }
-
             byte[] byteBuff = Convert.FromBase64String(input); //od umaznog stringa pravimo niz bajta
             byte[] decrypted; //pomocni niz u koji se dekriptuje
 
@@ -108,14 +103,27 @@ namespace Client
                 Padding = PaddingMode.None
             };
 
-            tripleDesCrypto.IV = byteBuff.Take(tripleDesCrypto.BlockSize / 8).ToArray();               // take the iv off the beginning of the ciphertext message			
+			int ivLength = tripleDesCrypto.IV.Length;
+			byte[] iv = new byte[ivLength];
+			for(int i = 0; i < ivLength; i++)
+			{
+				if (i >= byteBuff.Length)
+					iv[i] = (byte)'0';
+				else
+					iv[i] = byteBuff[i];
+			}
+			
+			tripleDesCrypto.IV = iv;// byteBuff.Take(tripleDesCrypto.BlockSize / 8).ToArray();               // take the iv off the beginning of the ciphertext message			
             ICryptoTransform tripleDesDecrypt = tripleDesCrypto.CreateDecryptor();
 
             using (MemoryStream mStream = new MemoryStream(byteBuff.Skip(tripleDesCrypto.BlockSize / 8).ToArray()))
             {
                 using (CryptoStream cryptoStream = new CryptoStream(mStream, tripleDesDecrypt, CryptoStreamMode.Read))
                 {
-                    decrypted = new byte[byteBuff.Length - tripleDesCrypto.BlockSize/8];
+					int decryptedBufferLength = byteBuff.Length - tripleDesCrypto.BlockSize / 8;
+					if (decryptedBufferLength < 0)
+						return "";
+                    decrypted = new byte[decryptedBufferLength];
                     cryptoStream.Read(decrypted, 0, decrypted.Length);
                 }
             }

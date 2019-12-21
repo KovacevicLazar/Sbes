@@ -80,7 +80,7 @@ namespace Client
                             {
                                 if (proxy.Write(message, secretKey))
                                 {
-                                    Console.WriteLine("Poruka je uspesno poslata. ");
+                                    Console.WriteLine($"Poruka '{message}' je uspesno poslata. ");
                                 }
                             }
                             else

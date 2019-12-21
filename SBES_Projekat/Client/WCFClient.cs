@@ -8,6 +8,7 @@ using System.Security.Principal;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography;
 using System.IO;
+using System.Diagnostics;
 
 namespace Client
 {
@@ -18,7 +19,26 @@ namespace Client
 		public WCFClient(NetTcpBinding binding, EndpointAddress address)
 			: base(binding, address)
 		{
-			factory = CreateChannel();
+			try
+			{
+				factory = CreateChannel();
+
+				using (EventLog log = new EventLog("Application"))
+				{
+					log.Source = "Application";
+					log.WriteEntry($"Client-side channel opened successfully.", EventLogEntryType.SuccessAudit, 103, 4);
+				}
+			}
+			catch(Exception e)
+			{
+				Console.WriteLine(e.Message);
+
+				using (EventLog log = new EventLog("Application"))
+				{
+					log.Source = "Application";
+					log.WriteEntry($"Client-side channel open failed. Fail message: '{e.Message}'.", EventLogEntryType.FailureAudit, 103, 4);
+				}
+			}
 		}
 		public bool Write(string message, string key)
 		{

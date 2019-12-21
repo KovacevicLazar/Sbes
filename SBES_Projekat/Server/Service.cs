@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using System;
+using System.Diagnostics;
 using System.Security.Principal;
 using System.ServiceModel;
 using System.ServiceModel.Description;
@@ -32,15 +33,25 @@ namespace Server
 			clientHost.Description.Behaviors.Add(new ServiceDebugBehavior() { IncludeExceptionDetailInFaults = true });
 
 			clientHost.Open();
+			using (EventLog log = new EventLog("Application"))
+			{
+				log.Source = "Application";
+				log.WriteEntry($"Service '{clientService}' opened successfully.", EventLogEntryType.SuccessAudit, 207, 4);
+			}
 			Console.WriteLine("WCFService is opened.");
 
             /// Registrovanje servisa na TGS
             using (WCFServiceRegister proxy = new WCFServiceRegister(binding, new EndpointAddress(new Uri("net.tcp://localhost:9997/ServiceConnection"))))
             {
+				using (EventLog log = new EventLog("Application"))
+				{
+					log.Source = "Application";
+					log.WriteEntry($"Service atempting to register.", EventLogEntryType.Information, 206, 4);
+				}
                 string hashPass = CreateSHA1("password");
                 proxy.Registration(serviceIPAddr + clientPort, clientService, clientPort, hashPass);
-                                   //localHost+port=IPAdresa
-            }
+				//localHost+port=IPAdresa
+			}
 
 
 			/// Otvaranje servisa za prijem tajnog kljuca
@@ -48,8 +59,19 @@ namespace Server
 			connectionHost.AddServiceEndpoint(typeof(IServiceKeyHandler), binding, connectionEndpoint);
 			connectionHost.Open();
 			Console.WriteLine("Connector service is opened.");
+			using (EventLog log = new EventLog("Application"))
+			{
+				log.Source = "Application";
+				log.WriteEntry($"Connection service '{connectionService}' opened successfully.", EventLogEntryType.SuccessAudit, 209, 4);
+			}
 
 			while (SecretKey.secretKey == null) System.Threading.Thread.Sleep(100);
+
+			using (EventLog log = new EventLog("Application"))
+			{
+				log.Source = "Application";
+				log.WriteEntry($"Client connected to service. Secret key for communication recieved.", EventLogEntryType.Information, 208, 4);
+			}
 
 			Console.WriteLine("Client connected with secret key: " + SecretKey.secretKey);
 
@@ -60,10 +82,20 @@ namespace Server
             using (WCFServiceRegister proxy = new WCFServiceRegister(binding, new EndpointAddress(new Uri("net.tcp://localhost:9997/ServiceConnection"))))
             { 
                 proxy.serviceSingOut(clientService);
-            }
+			}
 
             clientHost.Close();
+			using (EventLog log = new EventLog("Application"))
+			{
+				log.Source = "Application";
+				log.WriteEntry($"Service '{clientService}' closed successfully.", EventLogEntryType.Information, 210, 4);
+			}
 			connectionHost.Close();
+			using (EventLog log = new EventLog("Application"))
+			{
+				log.Source = "Application";
+				log.WriteEntry($"Service '{connectionService}' closed successfully.", EventLogEntryType.Information, 210, 4);
+			}
 		}
 
         public static string CreateSHA1(string input)

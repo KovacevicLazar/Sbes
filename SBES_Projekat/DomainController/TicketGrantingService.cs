@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -45,6 +46,11 @@ namespace DC
 			}
 			else
 			{
+				using (EventLog log = new EventLog("Application"))
+				{
+					log.Source = "Application";
+					log.WriteEntry($"Service '{serviceName}' not found.", EventLogEntryType.FailureAudit, 204, 4);
+				}
 				return null;
 			}
 		}
@@ -107,17 +113,38 @@ namespace DC
         }
 
         public void SignOutService(string hostName)
-        {
-        	activeServices.Remove(hostName);
+		{
+			activeServices.Remove(hostName);
             Console.WriteLine("Servis {0} is deactivated.", hostName);
+			using (EventLog log = new EventLog("Application"))
+			{
+				log.Source = "Application";
+				log.WriteEntry($"Service '{hostName}' signed out.", EventLogEntryType.Information, 205, 4);
+			}
         }
 
         public void RegisterService(string IPAddr, string hostName, string port, string hashPassword)
         {
+			if (ServiceExists(hostName))
+			{
+				Console.WriteLine($"Service {hostName} already exists.");
+				using (EventLog log = new EventLog("Application"))
+				{
+					log.Source = "Application";
+					log.WriteEntry($"Service '{hostName}' could not be registered because it already exists.", EventLogEntryType.FailureAudit, 206, 4);
+				}
+				throw new Exception("Service already registered.");
+			}
+
             EndpointAddress endpointAdress = new EndpointAddress(new Uri("net.tcp://localhost:" + port +  "/" + hostName), EndpointIdentity.CreateUpnIdentity("admin@w7ent"));
             activeServices.Add(hostName, new ServiceEntity(IPAddr, hostName, port, hashPassword,endpointAdress.Identity));
             dnsTable.Add(IPAddr, hostName);
             Console.WriteLine("Servis {0} is activated.", hostName);
-        }
+			using (EventLog log = new EventLog("Application"))
+			{
+				log.Source = "Application";
+				log.WriteEntry($"Service '{hostName}' registered successfully.", EventLogEntryType.SuccessAudit, 206, 4);
+			}
+		}
     }
 }

@@ -8,6 +8,7 @@ using System.Security.Principal;
 using System.Threading;
 using System.Security.Cryptography;
 using System.IO;
+using System.Diagnostics;
 
 namespace Client
 {
@@ -42,7 +43,7 @@ namespace Client
 
                 string haspass = CreateSHA1("password");
                 serviceEndpointAndKey = authenticator.Connect(username, haspass, service);
-                /// TODO: dekriptovanje tajnog kljuca
+				if (serviceEndpointAndKey == null) return;
                 
                 string encriptSecretKey = serviceEndpointAndKey.Item2;
                 secretKey =  Decript(encriptSecretKey, haspass);
@@ -50,8 +51,6 @@ namespace Client
                 Console.WriteLine("Trazeni servis je aktivan!\nKlijent dobio tajni kljuc: " + secretKey);
 
                 serviceEndpointAndKey.Item2.Replace(serviceEndpointAndKey.Item2, secretKey);
-
-                while (serviceEndpointAndKey == null) System.Threading.Thread.Sleep(100);
 			}
 
             ///	TODO: Komunikacija sa servisom
@@ -101,7 +100,12 @@ namespace Client
                             break;
                         case '3':
                             close = true;
-                            break;
+							using (EventLog eventLog = new EventLog("Application"))
+							{
+								eventLog.Source = "Application";
+								eventLog.WriteEntry("Client shut down.", EventLogEntryType.Information, 101, 4);
+							}
+							break;
                         default:
                             Console.WriteLine("Pogresan unos");
                             break;

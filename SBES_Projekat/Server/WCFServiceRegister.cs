@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
@@ -20,16 +21,21 @@ namespace Server
             factory = CreateChannel();
         }
 
-        public void Registration(string IPAddr, string hostNane, string port, string hashPassword)
+        public void Registration(string IPAddr, string hostName, string port, string hashPassword)
         {
             try
             {
-                factory.RegisterService(IPAddr, hostNane, port, hashPassword);
-            }
+                factory.RegisterService(IPAddr, hostName, port, hashPassword);
+			}
             catch (Exception e)
             {
                 Console.WriteLine("[SendMessage] ERROR = {0}", e.Message);
-            }
+				using (EventLog log = new EventLog("Application"))
+				{
+					log.Source = "Application";
+					log.WriteEntry($"Service '{hostName}' register failed.", EventLogEntryType.FailureAudit, 206, 4);
+				}
+			}
         }
 
 		// TODO:
@@ -38,11 +44,21 @@ namespace Server
             try
             {
                 factory.SignOutService(hostName);
-            }
+				using (EventLog log = new EventLog("Application"))
+				{
+					log.Source = "Application";
+					log.WriteEntry($"Service '{hostName}' signed out successfully.", EventLogEntryType.SuccessAudit, 205, 4);
+				}
+			}
             catch (Exception e)
             {
                 Console.WriteLine("[SendMessage] ERROR = {0}", e.Message);
-            }
+				using (EventLog log = new EventLog("Application"))
+				{
+					log.Source = "Application";
+					log.WriteEntry($"Service '{hostName}' sign out failed.", EventLogEntryType.FailureAudit, 205, 4);
+				}
+			}
         }
 
     }

@@ -12,8 +12,6 @@ namespace Contracts
     {
 		[OperationContract]
 		void TestCommunication();
-		[OperationContract]
-		void SendMessage(string message);
 
         [OperationContract]
         string Read();

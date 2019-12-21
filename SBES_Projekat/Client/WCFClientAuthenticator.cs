@@ -8,6 +8,7 @@ using System.Security.Principal;
 using System.Security.Cryptography.X509Certificates;
 using Client.Exceptions;
 using System.Security.Cryptography;
+using System.Diagnostics;
 
 namespace Client
 {
@@ -26,32 +27,42 @@ namespace Client
 			{
 				if (Authenticate(username, password))
 				{
+					//using (EventLog log = new EventLog("Application"))
+					//{
+					//	log.Source = "Application";
+					//	log.WriteEntry($"Client authentication successful.", EventLogEntryType.SuccessAudit, 102, 4);
+					//}
+
 					Tuple<string, string> serviceEndpoint = factory.SendServiceRequest(service, username);
                     if (serviceEndpoint == null )
-                    {
-                        Console.WriteLine("Trazeni servis nije aktivan.");
+					{
+						//using (EventLog eventLog = new EventLog("Application"))
+						//{
+						//	eventLog.Source = "Application";
+						//	eventLog.WriteEntry($"Failed to get service '{service}' endpoint.", EventLogEntryType.FailureAudit, 404, 4);
+						//}
+						//Console.WriteLine("Trazeni servis nije aktivan.");
                         return null;
                     }
                     else
-                    {
-                        Console.WriteLine($"Klijent konektovan na {serviceEndpoint.Item1}.");
-                    }
-
-
-                    if (serviceEndpoint != null)
 					{
-						Console.WriteLine($"{serviceEndpoint.Item1} pronadjen");
+						//using (EventLog log = new EventLog("Application"))
+						//{
+						//	log.Source = "Application";
+						//	log.WriteEntry($"Service endpoint '{serviceEndpoint.Item1}' successfully found.", EventLogEntryType.SuccessAudit, 100, 4);
+						//}
+						//Console.WriteLine($"{serviceEndpoint.Item1} pronadjen");
 						return serviceEndpoint;
-					}
-					else
-					{
-						Console.WriteLine($"Servis '{service}' nije pronadjen.");
-						return null;
 					}
 				}
 				else
 				{
-					Console.WriteLine("Invalid password.");
+					//using (EventLog log = new EventLog("Application"))
+					//{
+					//	log.Source = "Application";
+					//	log.WriteEntry($"Invalid password. Service authentication failed.", EventLogEntryType.FailureAudit, 102, 4);
+					//}
+					//Console.WriteLine("Invalid password.");
 					return null;
 				}
 			}
@@ -89,7 +100,6 @@ namespace Client
 			{
 				factory = null;
 			}
-			this.Close();
 		}
 
 

@@ -18,14 +18,6 @@ namespace Server
 			secretKey = key; 
 		}
 
-		public void SendMessage(string message)
-		{
-			///TODO: implementirati dekripciju
-			///string decryptedMessage = Decrypt(message, secretKey);
-
-
-		}
-
 		public void TestCommunication()
 		{
 			throw new NotImplementedException();

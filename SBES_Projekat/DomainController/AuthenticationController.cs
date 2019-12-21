@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.ServiceModel;
 using System.Text;
@@ -27,16 +28,31 @@ namespace DC
 		{
 			/// Nepostojeci korisnik ==> Exception
 			if (!RegisteredUsers.ContainsKey(username))
+			{
+				using (EventLog log = new EventLog("Application"))
+				{
+					log.Source = "Application";
+					log.WriteEntry($"Client '{username}' not found.", EventLogEntryType.Information, 203, 4);
+				}
 				throw new Exception("No shuch user.");
+			}
 
-            if (RegisteredUsers[username] == password)	///	Ispravan password ==> true
-            {
-                // log action
-                return true;
+            if (RegisteredUsers[username] == password)  ///	Ispravan password ==> true
+			{
+				using (EventLog log = new EventLog("Application"))
+				{
+					log.Source = "Application";
+					log.WriteEntry($"Client '{username}' authentication sucessfull.", EventLogEntryType.SuccessAudit, 202, 4);
+				}
+				return true;
             }
-			else	/// Neispravan password ==> false
-            {
-                // log action
+			else    /// Neispravan password ==> false
+			{
+				using (EventLog log = new EventLog("Application"))
+				{
+					log.Source = "Application";
+					log.WriteEntry($"Client '{username}' authentication failed.", EventLogEntryType.FailureAudit, 202, 4);
+				}
 				return false;
             }
 		}

@@ -49,7 +49,7 @@ namespace Server
 					log.WriteEntry($"Service atempting to register.", EventLogEntryType.Information, 206, 4);
 				}
                 string hashPass = CreateSHA1("password");
-                proxy.Registration(serviceIPAddr + clientPort, clientService, clientPort, hashPass);
+                proxy.Registration(serviceIPAddr + clientPort, clientService, clientPort, hashPass, id.Name);
 				//localHost+port=IPAdresa
 			}
 

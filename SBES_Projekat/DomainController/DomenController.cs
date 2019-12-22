@@ -9,8 +9,8 @@ using Contracts;
 
 namespace DC
 {
-	public class DomenController : IClientConnection
-	{
+	public class DomenController : IClientConnection, IServiceConnection
+    {
 		AuthenticationController AS = new AuthenticationController();
 		TicketGrantingService TGS = new TicketGrantingService();
 
@@ -63,6 +63,7 @@ namespace DC
 		{
 			return AS.Authenticate(username, password);
 		}
+
         /// <summary>
         /// Vraca ime servisa i enkriptovan tajni kljuc
         /// </summary>
@@ -78,5 +79,25 @@ namespace DC
 			}
 			return TGS.GetServiceEndpointAndSecretKey(service, AS.GetHashedUserPassword(username));
 		}
-	}
+
+
+        public bool RegisterService(string IPAddr, string hostName, string port, string hashPassword, string username)
+        {
+            if (AS.AuthenticateServer(IPAddr, hostName, port, hashPassword, username))
+            {
+                TGS.RegisterService(IPAddr, hostName, port, hashPassword);
+                Console.WriteLine("Usmesna autentifikacija Servera");
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public void SignOutService(string hostName)
+        {
+            TGS.SignOutService(hostName);
+        }
+    }
 }

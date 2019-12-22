@@ -27,7 +27,7 @@ namespace DC
             string addressForServer = "net.tcp://localhost:9997/ServiceConnection";
             NetTcpBinding bindingForServer = new NetTcpBinding();
 
-            ServiceHost hostForServer = new ServiceHost(typeof(TicketGrantingService));
+            ServiceHost hostForServer = new ServiceHost(typeof(DomenController));
             hostForServer.AddServiceEndpoint(typeof(IServiceConnection), bindingForServer, addressForServer);
 
             hostForServer.Open();

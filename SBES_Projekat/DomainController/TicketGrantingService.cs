@@ -12,7 +12,7 @@ using Contracts;
 
 namespace DC
 {
-	public class TicketGrantingService : ITicketGrantingService,  IServiceConnection
+	public class TicketGrantingService : ITicketGrantingService
     {
         //<ipAddr,hostName>
         private static Dictionary<string, string> dnsTable;

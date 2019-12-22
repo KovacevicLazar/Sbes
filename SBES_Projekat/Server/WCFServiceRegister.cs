@@ -21,11 +21,11 @@ namespace Server
             factory = CreateChannel();
         }
 
-        public void Registration(string IPAddr, string hostName, string port, string hashPassword)
+        public void Registration(string IPAddr, string hostName, string port, string hashPassword, string username)
         {
             try
             {
-                factory.RegisterService(IPAddr, hostName, port, hashPassword);
+                factory.RegisterService(IPAddr, hostName, port, hashPassword,username);
 			}
             catch (Exception e)
             {

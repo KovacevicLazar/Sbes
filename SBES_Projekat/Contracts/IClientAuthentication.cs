@@ -10,5 +10,6 @@ namespace Contracts
 	{
 		bool Authenticate(string username, string passord);
 		string GetHashedUserPassword(string username);
-	}
+
+    }
 }

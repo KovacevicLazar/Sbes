@@ -86,7 +86,7 @@ namespace DC
             if (AS.AuthenticateServer(IPAddr, hostName, port, hashPassword, username))
             {
                 TGS.RegisterService(IPAddr, hostName, port, hashPassword);
-                Console.WriteLine("Usmesna autentifikacija Servera");
+                Console.WriteLine("Uspesna autentifikacija Servera");
                 return true;
             }
             else

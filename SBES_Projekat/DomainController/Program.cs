@@ -18,8 +18,10 @@ namespace DC
 
 			ServiceHost host = new ServiceHost(typeof(DomenController));
 			host.AddServiceEndpoint(typeof(IClientConnection), binding, address);
+			host.Description.Behaviors.Remove(typeof(ServiceDebugBehavior));
+			host.Description.Behaviors.Add(new ServiceDebugBehavior { IncludeExceptionDetailInFaults = true });
 
-            host.Open();
+			host.Open();
             Console.WriteLine("Domain controller host is opened.");
 
             //host za prijavu i odjavu servera->

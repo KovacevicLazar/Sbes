@@ -26,113 +26,105 @@ namespace Client
 			binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
 			binding.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.EncryptAndSign;
 
-            string username = id.Name; // "DESKTOP-IJMHSLM\\Luka";
+            string username = id.Name + '1'; // "DESKTOP-IJMHSLM\\Luka";
+			Console.WriteLine($"User: {username}");
 
 			string address = "net.tcp://localhost:";
 			string servicePort = "9999";
 			string authenticationPort = "9998";
 			string authenticationService = "DomenController";
 			string service = "WCFService";
-			Tuple<string, string> serviceEndpointAndKey;
+			Tuple<string, string> serviceEndpointAndKey = null;
 			string secretKey = null;
-
 
 			using (WCFClientAuthenticator authenticator = new WCFClientAuthenticator(binding, new EndpointAddress(new Uri(address + authenticationPort + "/" + authenticationService))))
 			{
                 ///	Slanje ID klijenta, PASSWORD klijenta
 
                 string haspass = CreateSHA1("password");
-                serviceEndpointAndKey = authenticator.Connect(username, haspass, service);
-                if (serviceEndpointAndKey == null) 
-                {
-                    Console.WriteLine("Trazeni servis nije aktivan. Pritisni enter za kraj.");
-                    Console.ReadLine();
-                    return;
-                }
-              
-                string encriptSecretKey = serviceEndpointAndKey.Item2;
-                secretKey =  Decript(encriptSecretKey, haspass);
-               
-                Console.WriteLine("Trazeni servis je aktivan!\nKlijent dobio tajni kljuc: " + secretKey);
+				if (authenticator.Authenticate(username, haspass))
+				{
+					serviceEndpointAndKey = authenticator.ServiceRequest(service, username);
+					if (serviceEndpointAndKey == null)
+					{
+						Console.WriteLine("Trazeni servis nije aktivan. Pritisni enter za kraj.");
+						Console.ReadLine();
+						return;
+					}
 
-                serviceEndpointAndKey.Item2.Replace(serviceEndpointAndKey.Item2, secretKey);
-			}
+					string encriptSecretKey = serviceEndpointAndKey.Item2;
+					secretKey = Decript(encriptSecretKey, haspass);
 
-            ///	TODO: Komunikacija sa servisom
-            using (WCFClient proxy = new WCFClient(binding, new EndpointAddress(new Uri(serviceEndpointAndKey.Item1))))
-            {
-                char izbor;
-                string message = "";
-                bool close=false;
-                while (!close)
-                {
-                    message = "";
-                    Console.WriteLine();
-                    Console.WriteLine("------Izaberi------");
-                    Console.WriteLine("1 -> Slanje poruke (Write)");
-                    Console.WriteLine("2 -> Prijem poruke (Read)");
-                    Console.WriteLine("3 -> Zatvaranje komunikacije");
-                    Console.WriteLine("Unesi:");
-                    izbor = Console.ReadKey().KeyChar;
-                    Console.WriteLine();
-                    switch (izbor)
-                    {
-                        case '1':
-                            Console.WriteLine("Unesi poruku za slanje:");
-                            message = Console.ReadLine();
-                            Console.WriteLine();
-                            if (!message.Trim().Equals(""))
-                            {
-                                if (proxy.Write(message, secretKey))
-                                {
-                                    Console.WriteLine($"Poruka '{message}' je uspesno poslata. ");
-                                }
-                            }
-                            else
-                                Console.WriteLine("Poruka za slanje nije uneta");
-                            break;
-                        case '2':
-                            Console.WriteLine();
-                            string primljenaPoruka = proxy.Read(secretKey);
-                            if (primljenaPoruka.Trim().Equals(""))
-                            {
-                                Console.WriteLine("Nema podataka na serveru");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Server Poslao: " + primljenaPoruka);
-                            }
-                            break;
-                        case '3':
-                            close = true;
-							using (EventLog eventLog = new EventLog("Application"))
+					Console.WriteLine("Trazeni servis je aktivan!\nKlijent dobio tajni kljuc: " + secretKey);
+
+					serviceEndpointAndKey.Item2.Replace(serviceEndpointAndKey.Item2, secretKey);
+
+					//Komunikacija sa servisom
+					using (WCFClient proxy = new WCFClient(binding, new EndpointAddress(new Uri(serviceEndpointAndKey.Item1))))
+					{
+						char izbor;
+						string message = "";
+						bool close = false;
+						while (!close)
+						{
+							message = "";
+							Console.WriteLine();
+							Console.WriteLine("------Izaberi------");
+							Console.WriteLine("1 -> Slanje poruke (Write)");
+							Console.WriteLine("2 -> Prijem poruke (Read)");
+							Console.WriteLine("3 -> Zatvaranje komunikacije");
+							Console.WriteLine("Unesi:");
+							izbor = Console.ReadKey().KeyChar;
+							Console.WriteLine();
+							switch (izbor)
 							{
-								eventLog.Source = "Application";
-								eventLog.WriteEntry("Client shut down.", EventLogEntryType.Information, 101, 4);
+								case '1':
+									Console.WriteLine("Unesi poruku za slanje:");
+									message = Console.ReadLine();
+									Console.WriteLine();
+									if (!message.Trim().Equals(""))
+									{
+										if (proxy.Write(message, secretKey))
+										{
+											Console.WriteLine($"Poruka '{message}' je uspesno poslata. ");
+										}
+									}
+									else
+										Console.WriteLine("Poruka za slanje nije uneta");
+									break;
+								case '2':
+									Console.WriteLine();
+									string primljenaPoruka = proxy.Read(secretKey);
+									if (primljenaPoruka.Trim().Equals(""))
+									{
+										Console.WriteLine("Nema podataka na serveru");
+									}
+									else
+									{
+										Console.WriteLine("Server Poslao: " + primljenaPoruka);
+									}
+									break;
+								case '3':
+									close = true;
+									using (EventLog eventLog = new EventLog("Application"))
+									{
+										eventLog.Source = "Application";
+										eventLog.WriteEntry("Client shut down.", EventLogEntryType.Information, 101, 4);
+									}
+									break;
+								default:
+									Console.WriteLine("Pogresan unos");
+									break;
 							}
-							break;
-                        default:
-                            Console.WriteLine("Pogresan unos");
-                            break;
-
-                    }
-
-                }
-     
-            }
-				/// Create a signature using SHA1 hash algorithm
-				//byte[] signature = DigitalSignature.Create();
-				//proxy.SendMessage();
-				
-
-
-				/// For the same message, create a signature based on the "wrongCertCN"
-				//X509Certificate2 wrongSignCert = null;
-
-				/// Create a signature using SHA1 hash algorithm
-				//byte[] signature1 = DigitalSignature.Create();
-				//proxy.SendMessage();
-
+						}
+					}
+				}
+				else
+				{
+					Console.WriteLine("Invalid credentials.");
+				}
+			}
+			
 			Console.ReadLine();
 		}
 

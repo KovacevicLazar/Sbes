@@ -26,7 +26,7 @@ namespace Client
 			binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
 			binding.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.EncryptAndSign;
 
-			string username = "DESKTOP-IJMHSLM\\Luka";
+            string username = id.Name; // "DESKTOP-IJMHSLM\\Luka";
 
 			string address = "net.tcp://localhost:";
 			string servicePort = "9999";
@@ -43,8 +43,13 @@ namespace Client
 
                 string haspass = CreateSHA1("password");
                 serviceEndpointAndKey = authenticator.Connect(username, haspass, service);
-				if (serviceEndpointAndKey == null) return;
-                
+                if (serviceEndpointAndKey == null) 
+                {
+                    Console.WriteLine("Trazeni servis nije aktivan. Pritisni enter za kraj.");
+                    Console.ReadLine();
+                    return;
+                }
+              
                 string encriptSecretKey = serviceEndpointAndKey.Item2;
                 secretKey =  Decript(encriptSecretKey, haspass);
                

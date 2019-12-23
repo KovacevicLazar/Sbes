@@ -37,8 +37,7 @@ namespace Server
 				}
 			}
         }
-
-		// TODO:
+		
         public void serviceSingOut(string hostName)
         {
             try

@@ -70,7 +70,7 @@ namespace DC
                 using (EventLog log = new EventLog("Application"))
                 {
                     log.Source = "Application";
-                    log.WriteEntry($"Client '{username}' not found.", EventLogEntryType.Information, 203, 4);
+                    log.WriteEntry($"Service '{username}' not found.", EventLogEntryType.Information, 203, 4);
                 }
                 throw new Exception("No shuch user.");
             }
@@ -80,7 +80,7 @@ namespace DC
                 using (EventLog log = new EventLog("Application"))
                 {
                     log.Source = "Application";
-                    log.WriteEntry($"Client '{username}' authentication sucessfull.", EventLogEntryType.SuccessAudit, 202, 4);
+                    log.WriteEntry($"Service '{username}' authentication sucessfull.", EventLogEntryType.SuccessAudit, 202, 4);
                 }
                 return true;
             }

@@ -26,7 +26,7 @@ namespace Client
 			binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
 			binding.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.EncryptAndSign;
 
-            string username = id.Name + '1'; // "DESKTOP-IJMHSLM\\Luka";
+            string username = id.Name; // "DESKTOP-IJMHSLM\\Luka";
 			Console.WriteLine($"User: {username}");
 
 			string address = "net.tcp://localhost:";

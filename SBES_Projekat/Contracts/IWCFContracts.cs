@@ -10,9 +10,6 @@ namespace Contracts
     [ServiceContract]
     public interface IWCFContracts
     {
-		[OperationContract]
-		void TestCommunication();
-
         [OperationContract]
         string Read();
         [OperationContract]

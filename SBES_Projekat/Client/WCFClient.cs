@@ -148,7 +148,7 @@ namespace Client
             {
                 Key = KeyFor3DES,
                 Mode = CipherMode.CBC,
-                Padding = PaddingMode.Zeros
+                Padding = PaddingMode.None
             };
 
             //Mora sa ovim algoritmom, sa starim radi samo u  ECB modu

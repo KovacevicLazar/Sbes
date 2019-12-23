@@ -7,16 +7,9 @@ using System.ServiceModel;
 
 namespace Contracts
 {
-    [ServiceContract]
 	public interface ITicketGrantingService
 	{
-        [OperationContract]
 		bool ServiceExists(string serviceName);
-        [OperationContract]
         Tuple<string, string> GetServiceEndpointAndSecretKey(string serviceName, string hashedClientPassword);
-        //[OperationContract]
-       // string Encript(string input, string key);
-        //[OperationContract]
-        //string GenerateSecretKey();
 	}
 }

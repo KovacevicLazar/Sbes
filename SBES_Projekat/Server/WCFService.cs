@@ -17,12 +17,7 @@ namespace Server
 		{
 			secretKey = key; 
 		}
-
-		public void TestCommunication()
-		{
-			throw new NotImplementedException();
-		}
-
+		
         public string Read()
         {
             if (primljenePoruke.Count == 0)
@@ -48,11 +43,6 @@ namespace Server
 
         public static string Decript(string input, string key)
         {
-            //while (input.Length % 8 != 0)    //kriptuje samo do velicine deljuve sa 8 ostatak odbaci, zbog toga ova petlja
-            //{
-            //    input = input + " ";
-            //}
-
             byte[] byteBuff = Convert.FromBase64String(input); //od umaznog stringa pravimo niz bajta
             byte[] decrypted; //pomocni niz u koji se dekriptuje
 
@@ -84,10 +74,6 @@ namespace Server
 
         public string Encrypt(string input, string key)
         {
-            //while (input.Length % 8 != 0)    //kriptuje samo do velicine deljuve sa 8 ostatak odbaci, zbog toga ova petlja
-            //{
-            //    input = input + " ";
-            //}
             byte[] rawInput = Encoding.UTF8.GetBytes(input); //pravimo niz bajtova od unetog stringa
             byte[] encrypted; //pomocni niz u koga enkriptujemo
 
@@ -98,7 +84,7 @@ namespace Server
             {
                 Key = KeyFor3DES,
                 Mode = CipherMode.CBC,
-                Padding = PaddingMode.Zeros
+                Padding = PaddingMode.None
             };
             tripleDesCrypto.GenerateIV();
             ICryptoTransform tripleDesEncrypt = tripleDesCrypto.CreateEncryptor();
